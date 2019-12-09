@@ -83,7 +83,6 @@ public class PowerSchool {
                     if (affected != 1) {
                         System.err.println("Unable to update last login (affected rows: " + affected + ").");
                     }
-
                     return new User(rs);
                 }
             }

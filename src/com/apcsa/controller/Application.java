@@ -18,7 +18,7 @@ public class Application {
         this.in = new Scanner(System.in);
 
         try {
-            PowerSchool.initialize(false);
+            PowerSchool.initialize(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,9 +48,9 @@ public class Application {
                     ? PowerSchool.getTeacher(activeUser) : activeUser.isStudent()
                     ? PowerSchool.getStudent(activeUser) : activeUser.isRoot()
                     ? activeUser : null;
-
+                
                 if (isFirstLogin() && !activeUser.isRoot()) {
-                    // first-time users need to change their passwords from the default provided
+                    System.out.println("As a new user, you must change your password.");
                 }
 
                 // create and show the user interface
