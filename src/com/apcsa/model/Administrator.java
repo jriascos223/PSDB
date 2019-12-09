@@ -21,5 +21,18 @@ public class Administrator extends User {
 		
 	}
     
+    /*
+     * Getters
+     */
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+    
+    
+    
     
 }

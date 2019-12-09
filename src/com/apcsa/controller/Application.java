@@ -2,6 +2,7 @@ package com.apcsa.controller;
 
 import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
+import com.apcsa.model.Administrator;
 import com.apcsa.model.User;
 
 public class Application {
@@ -50,7 +51,10 @@ public class Application {
                     ? activeUser : null;
                 
                 if (isFirstLogin() && !activeUser.isRoot()) {
-                    System.out.println("As a new user, you must change your password.");
+                	System.out.println(((Administrator) activeUser).getLastName());
+                    //System.out.print("As a new user, you must change your password. \nEnter your new password: ");
+                    //String tempPassword = in.next();
+                    //activeUser.setPassword(tempPassword);
                 }
 
                 // create and show the user interface
