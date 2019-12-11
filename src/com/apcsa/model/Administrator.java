@@ -31,6 +31,33 @@ public class Administrator extends User {
 	public String getLastName() {
 		return lastName;
 	}
+
+	public static void viewFaculty() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void viewFacultyByDept() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void viewStudentEnrollment() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void viewStudentEnrollmentByGrade() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void viewStudentEnrollmentByCourse() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
     
     
     
