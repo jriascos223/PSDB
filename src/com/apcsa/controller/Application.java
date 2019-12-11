@@ -4,6 +4,14 @@ import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.Administrator;
 import com.apcsa.model.User;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class Application {
 
@@ -55,7 +63,21 @@ public class Application {
                     System.out.print("As a new user, you must change your password. \nEnter your new password: ");
                     String tempPassword = in.next();
                     activeUser.setPassword(tempPassword);
-                    System.out.println(((Administrator) activeUser).getPassword());
+                    String hashedPassword = Utils.getHash(tempPassword);
+                    try (Connection conn = PowerSchool.getConnection(); PreparedStatement stmt = conn.prepareStatement("UPDATE users SET auth = ? WHERE username = ?")) {
+                    	stmt.setString(1, hashedPassword);
+                    	stmt.setString(2, activeUser.getUsername());
+                    	conn.setAutoCommit(false);
+                    	if (stmt.executeUpdate() == 1) {
+                    		conn.commit();
+                    	}else {
+                    		conn.rollback();
+                    	}
+                    } catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    
                 }
 
                 // create and show the user interface

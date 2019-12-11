@@ -79,7 +79,7 @@ public class User {
     }
     
     public void setPassword(String password) {
-    	this.password = Utils.getHash(password);
+    	this.password = password;
     }
 
     /**
