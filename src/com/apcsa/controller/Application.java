@@ -19,7 +19,7 @@ public class Application {
         this.in = new Scanner(System.in);
 
         try {
-            PowerSchool.initialize(true);
+            PowerSchool.initialize(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,9 +52,10 @@ public class Application {
                 
                 if (isFirstLogin() && !activeUser.isRoot()) {
                 	System.out.println(((Administrator) activeUser).getLastName());
-                    //System.out.print("As a new user, you must change your password. \nEnter your new password: ");
-                    //String tempPassword = in.next();
-                    //activeUser.setPassword(tempPassword);
+                    System.out.print("As a new user, you must change your password. \nEnter your new password: ");
+                    String tempPassword = in.next();
+                    activeUser.setPassword(tempPassword);
+                    System.out.println(((Administrator) activeUser).getPassword());
                 }
 
                 // create and show the user interface
