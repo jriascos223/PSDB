@@ -31,7 +31,7 @@ public class PowerSchool {
         filepath = windows ? filepath.replaceAll("\\\\src.*", "") : filepath.replaceAll("/src.*", "");
         System.out.println(filepath);
         String addition = windows ? "\\data\\powerschool.db" : "/data/powerschool.db";
-        return filepath + "/data/powerschool.db";
+        return filepath + addition;
     }
 
     /**
