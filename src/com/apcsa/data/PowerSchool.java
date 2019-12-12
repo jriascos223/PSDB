@@ -26,11 +26,9 @@ public class PowerSchool {
     
     private static String windowsOrMac() {
     	String filepath = System.getProperty("user.dir");
-        boolean windows = filepath.matches(".*\\\\.*"); 
-        System.out.println(filepath);
-        filepath = windows ? filepath.replaceAll("\\\\src.*", "") : filepath.replaceAll("/src.*", "");
-        System.out.println(filepath);
-        String addition = windows ? "\\data\\powerschool.db" : "/data/powerschool.db";
+        filepath = filepath.replaceAll("/src.*", "");
+        String addition = "/data/powerschool.db";
+
         return filepath + addition;
     }
 
