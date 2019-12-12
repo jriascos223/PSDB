@@ -22,7 +22,17 @@ import com.apcsa.model.User;
 public class PowerSchool {
 
     private final static String PROTOCOL = "jdbc:sqlite:";
-    private final static String DATABASE_URL = "data/powerschool.db";
+    private final static String DATABASE_URL = windowsOrMac();
+    
+    private static String windowsOrMac() {
+    	String filepath = System.getProperty("user.dir");
+        boolean windows = filepath.matches(".*\\\\.*"); 
+        System.out.println(filepath);
+        filepath = windows ? filepath.replaceAll("\\\\src.*", "") : filepath.replaceAll("/src.*", "");
+        System.out.println(filepath);
+        String addition = windows ? "\\data\\powerschool.db" : "/data/powerschool.db";
+        return filepath + "/data/powerschool.db";
+    }
 
     /**
      * Initializes the database if needed (or if requested).

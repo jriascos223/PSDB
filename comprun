@@ -1,0 +1,4 @@
+#!/bin/bash
+
+javac -cp "/Users/josephriascos/Desktop/APCSA/pset-7/bin:/Users/josephriascos/Desktop/APCSA/pset-7/lib/sqlite-jdbc-3.28.0.jar" src/com/apcsa/controller/*.java src/com/apcsa/model/*.java src/com/apcsa/data/*.java
+java -cp "/Users/josephriascos/Desktop/APCSA/pset-7/bin:/Users/josephriascos/Desktop/APCSA/pset-7/lib/sqlite-jdbc-3.28.0.jar" src/com/apcsa/controller/Application.java
