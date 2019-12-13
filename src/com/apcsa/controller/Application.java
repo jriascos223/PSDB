@@ -127,7 +127,6 @@ public class Application {
     				Administrator.viewStudentEnrollmentByCourse();
     				return true;
     			case PASSWORD:
-    				String tempPassword = Utils.getHash((in.nextLine()));
     				((Administrator) activeUser).changePassword(in);
     				return true;
     			case LOGOUT:
