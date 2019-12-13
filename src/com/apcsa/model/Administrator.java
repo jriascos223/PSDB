@@ -4,6 +4,7 @@ import com.apcsa.controller.Utils;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
 import com.apcsa.data.QueryUtils;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,7 +57,31 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewFacultyByDept() {
+	public static void viewFacultyByDept(Scanner in) {
+		
+		System.out.println("\nChoose a department:\n");
+		
+		try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_DEPARTMENTS);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					System.out.println(rs.getString("Departments"));
+				}
+			} catch (SQLException e){
+				System.out.println(e);
+			}
+			
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+		
+		try {
+			int selection = in.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("\nYour input was invalid. Please try again.\n");
+		} finally {
+			in.nextLine();
+		}
 		
 	}
 

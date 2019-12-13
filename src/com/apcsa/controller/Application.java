@@ -115,7 +115,7 @@ public class Application {
     				Administrator.viewFaculty();
     				return true;
     			case FACULTYBYDEPT:
-    				Administrator.viewFacultyByDept();
+    				Administrator.viewFacultyByDept(in);
     				return true;
     			case STUDENT: 
     				Administrator.viewStudentEnrollment();
@@ -179,23 +179,23 @@ public class Application {
 		} while (output < 1 || output > 7);
 		
 		switch(output) {
-		case 1:
-			return AdminAction.FACULTY;
-		case 2:
-			return AdminAction.FACULTYBYDEPT;
-		case 3:
-			return AdminAction.STUDENT;
-		case 4:
-			return AdminAction.STUDENTBYGRADE;
-		case 5:
-			return AdminAction.STUDENTBYCOURSE;
-		case 6:
-			return AdminAction.PASSWORD;
-		case 7:
-			return AdminAction.LOGOUT;
-		default:
-			return null;
-	}
+			case 1:
+				return AdminAction.FACULTY;
+			case 2:
+				return AdminAction.FACULTYBYDEPT;
+			case 3:
+				return AdminAction.STUDENT;
+			case 4:
+				return AdminAction.STUDENTBYGRADE;
+			case 5:
+				return AdminAction.STUDENTBYCOURSE;
+			case 6:
+				return AdminAction.PASSWORD;
+			case 7:
+				return AdminAction.LOGOUT;
+			default:
+				return null;
+		}
 		
     }
     

@@ -70,5 +70,8 @@ public class QueryUtils {
     
     public static String GET_STUDENTS = 
     	"SELECT last_name || ', ' || first_name || ' / ' || graduation \"Phrase\" FROM students ORDER BY last_name";
+    
+    public static String GET_DEPARTMENTS = 
+    	"SELECT '[' || department_id || '] ' || title || '.' \"Departments\" FROM departments ORDER BY department_id;";
 
 }
