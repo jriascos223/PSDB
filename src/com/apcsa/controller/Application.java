@@ -21,6 +21,10 @@ public class Application {
 
     private Scanner in;
     private User activeUser;
+    
+    enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
+    enum StudentAction { GRADES, GRADESBYCOURSE, PASSWORD, LOGOUT }
+    enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT}
 
     /**
      * Creates an instance of the Application class, which is responsible for interacting
@@ -64,25 +68,10 @@ public class Application {
                     ? activeUser : null;
                 
                 if (isFirstLogin() && !activeUser.isRoot()) {
-                    System.out.print("\nAs a new user, you must change your password. \n\nEnter your new password: ");
-                    String tempPassword = in.next();
-                    activeUser.setPassword(tempPassword);
-                    String hashedPassword = Utils.getHash(tempPassword);
-                    
-                    try {
-						Connection conn = PowerSchool.getConnection();
-						int success = PowerSchool.updatePassword(conn, activeUser.getUsername(), hashedPassword);
-						if (success == 1) {
-							System.out.println("\nSuccess!\n");
-						}else if (success == -1) {
-							System.out.println("Something went wrong.");
-						}
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+                    firstTimePassword();
                 }
                 
-                System.out.printf("Hello again, %s!\n", activeUser.getFirstName());
+                System.out.printf("\nHello again, %s!\n", activeUser.getFirstName());
 
                 while (login) {
                 	login = this.requestSelectionLoop(activeUser);
@@ -94,50 +83,71 @@ public class Application {
     }
     
     /*
+     * First time password reset.
+     */
+    
+    private void firstTimePassword() {
+    	System.out.print("\nAs a new user, you must change your password. \n\nEnter your new password: ");
+        String tempPassword = in.next();
+        activeUser.setPassword(tempPassword);
+        String hashedPassword = Utils.getHash(tempPassword);
+        
+        try {
+			Connection conn = PowerSchool.getConnection();
+			int success = PowerSchool.updatePassword(conn, activeUser.getUsername(), hashedPassword);
+			if (success == 1) {
+				System.out.println("\nSuccess!");
+			}else if (success == -1) {
+				System.out.println("Something went wrong.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    /*
      * Request selection loop.
      */
     public boolean requestSelectionLoop(User user) {
     	if (user.isAdministrator()) {
     		switch(getAdminSelection()) {
-    			case 1:
+    			case FACULTY:
     				Administrator.viewFaculty();
     				return true;
-    			case 2:
+    			case FACULTYBYDEPT:
     				Administrator.viewFacultyByDept();
     				return true;
-    			case 3: 
+    			case STUDENT: 
     				Administrator.viewStudentEnrollment();
     				return true;
-    			case 4:
+    			case STUDENTBYGRADE:
     				Administrator.viewStudentEnrollmentByGrade();
     				return true;
-    			case 5:
+    			case STUDENTBYCOURSE:
     				Administrator.viewStudentEnrollmentByCourse();
     				return true;
-    			case 6:
+    			case PASSWORD:
     				System.out.println("\nEnter a new password:");
     				String tempPassword = Utils.getHash((in.nextLine()));
     				((Administrator) activeUser).changePassword(tempPassword);
     				return true;
-    			case 7:
+    			case LOGOUT:
     				return false;
     		}
     	}else if (user.isTeacher()) {
     		
     	}else if (user.isStudent()) {
     		switch(getStudentSelection()) {
-    			case 1:
+    			case GRADES:
     				//Student.viewCourseGrades();
     				return true;
-    			case 2:
+    			case GRADESBYCOURSE:
     				//Student.viewAssignmentGradesByCourse();
     				return true;
-    			case 3:
-    				System.out.println("\nEnter a new password:");
-    				String tempPassword = Utils.getHash((in.nextLine()));
-    				((Student) activeUser).changePassword(tempPassword);
+    			case PASSWORD:
+    				((Student) activeUser).changePassword(in);
     				return true;
-    			case 4:
+    			case LOGOUT:
     				return false;
     				
     		}
@@ -152,7 +162,7 @@ public class Application {
      * Requests selection from any administrator accounts.
      */
     
-    public int getAdminSelection() {
+    public AdminAction getAdminSelection() {
     	int output = 0;
 		do {
 			System.out.println("\n[1] View faculty.");
@@ -170,14 +180,32 @@ public class Application {
 			in.nextLine(); // clears the buffer
 		} while (output < 1 || output > 7);
 		
-		return output;
+		switch(output) {
+		case 1:
+			return AdminAction.FACULTY;
+		case 2:
+			return AdminAction.FACULTYBYDEPT;
+		case 3:
+			return AdminAction.STUDENT;
+		case 4:
+			return AdminAction.STUDENTBYGRADE;
+		case 5:
+			return AdminAction.STUDENTBYCOURSE;
+		case 6:
+			return AdminAction.PASSWORD;
+		case 7:
+			return AdminAction.LOGOUT;
+		default:
+			return null;
+	}
+		
     }
     
     /*
      * Requests selection from any student accounts.
      */
     
-    public int getStudentSelection() {
+    public StudentAction getStudentSelection() {
     	int output = 0;
     	do {
     		System.out.println("\n[1] View course grades.");
@@ -192,7 +220,18 @@ public class Application {
 			in.nextLine();
     	} while (output < 1 || output > 4);
     	
-    	return output;
+    	switch(output) {
+    		case 1:
+    			return StudentAction.GRADES;
+    		case 2:
+    			return StudentAction.GRADESBYCOURSE;
+    		case 3:
+    			return StudentAction.PASSWORD;
+    		case 4:
+    			return StudentAction.LOGOUT;
+    		default:
+    			return null;
+    	}
     }
 
     /**

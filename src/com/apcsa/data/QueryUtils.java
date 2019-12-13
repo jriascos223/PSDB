@@ -31,6 +31,10 @@ public class QueryUtils {
             "SET last_login = ? " +
         "WHERE username = ?";
     
+    /*
+     * Updates the password of a user.
+     */
+    
     public static final String UPDATE_PASSWORD_SQL = 
     		"UPDATE users "
     		+ "SET auth = ? " +
@@ -59,4 +63,7 @@ public class QueryUtils {
     public static final String GET_STUDENT_SQL =
         "SELECT * FROM students " +
             "WHERE user_id = ?";
+    
+    public static String GET_FACULTY = 
+    	"SELECT last_name || ', ' || first_name || ' / ' || department_id FROM teachers ORDER BY last_name";
 }

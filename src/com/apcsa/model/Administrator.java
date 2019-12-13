@@ -2,8 +2,10 @@ package com.apcsa.model;
 
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
+import com.apcsa.data.QueryUtils;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -15,7 +17,7 @@ public class Administrator extends User {
     private String jobTitle;
     
     public Administrator(User user, ResultSet rs) throws SQLException {
-		super(user.getUserId(), user.getAccountType(), user.getUsername(), user.getPassword(), user.getLastLogin());
+		super(user);
 		
 		this.administratorId = rs.getInt("administrator_id");
 		this.firstName = rs.getString("first_name");
@@ -36,6 +38,22 @@ public class Administrator extends User {
 	}
 
 	public static void viewFaculty() {
+		try {
+			Connection conn = PowerSchool.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY);
+			
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					System.out.println(rs.getString(1));
+				}
+				
+			} catch (SQLException e) {
+				
+			}
+		} catch (SQLException e){
+			
+		}
+			
 		
 	}
 
