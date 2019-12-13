@@ -61,8 +61,21 @@ public class Administrator extends User {
 	}
 
 	public static void viewStudentEnrollment() {
-		// TODO Auto-generated method stub
-		
+		try {
+			Connection conn = PowerSchool.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS);
+			
+			try (ResultSet rs = stmt.executeQuery()) {
+				System.out.println("\n");
+				while (rs.next()) {
+					System.out.println(rs.getString("Phrase"));
+				}
+			} catch (SQLException e) {
+				System.out.println(e);
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 	}
 
 	public static void viewStudentEnrollmentByGrade() {
