@@ -1,9 +1,10 @@
 package com.apcsa.model;
 
+import com.apcsa.controller.Utils;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
 import com.apcsa.data.QueryUtils;
-
+import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,22 +44,19 @@ public class Administrator extends User {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY);
 			
 			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					System.out.println(rs.getString(1));
+				System.out.print("\n");
+				while (rs.next()) {
+					System.out.println(rs.getString("Phrase"));
 				}
-				
 			} catch (SQLException e) {
-				
+				System.out.println(e);
 			}
 		} catch (SQLException e){
-			
+			System.out.println(e);
 		}
-			
-		
 	}
 
 	public static void viewFacultyByDept() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -77,15 +75,23 @@ public class Administrator extends User {
 		
 	}
 
-	public void changePassword(String password) {
-		this.setPassword(password);
-		try {
-			Connection conn = PowerSchool.getConnection();
-			PowerSchool.updatePassword(conn, this.getUsername(), password);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void changePassword(Scanner in) {
+		System.out.println("\nEnter current password:");
+    	String currentPassword = in.nextLine();
+    	
+    	if (currentPassword.equals(this.password)) {
+    		System.out.println("\nEnter a new password:");
+    		String password = Utils.getHash((in.nextLine()));
+    		this.setPassword(password);
+        	try {
+        		Connection conn = PowerSchool.getConnection();
+        		PowerSchool.updatePassword(conn, this.getUsername(), password);
+        	} catch (SQLException e){
+        		System.out.println(e);
+        	}
+    	}else {
+    		System.out.println("\nIncorrect current password.");
+    	}
 		
 	}
 

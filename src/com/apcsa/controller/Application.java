@@ -127,9 +127,8 @@ public class Application {
     				Administrator.viewStudentEnrollmentByCourse();
     				return true;
     			case PASSWORD:
-    				System.out.println("\nEnter a new password:");
     				String tempPassword = Utils.getHash((in.nextLine()));
-    				((Administrator) activeUser).changePassword(tempPassword);
+    				((Administrator) activeUser).changePassword(in);
     				return true;
     			case LOGOUT:
     				return false;
@@ -171,7 +170,7 @@ public class Application {
 			System.out.println("[4] View student enrollment by grade.");
 			System.out.println("[5] View student enrollment by course.");
 			System.out.println("[6] Change password.");
-			System.out.println("[7] Logout.");
+			System.out.println("[7] Logout.\n");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
@@ -211,7 +210,7 @@ public class Application {
     		System.out.println("\n[1] View course grades.");
 			System.out.println("[2] View assignment grades by course.");
 			System.out.println("[3] Change password.");
-			System.out.println("[4] Logout.");
+			System.out.println("[4] Logout.\n");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
