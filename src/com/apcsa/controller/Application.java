@@ -5,6 +5,8 @@ import com.apcsa.data.PowerSchool;
 import com.apcsa.data.QueryUtils;
 import com.apcsa.model.Administrator;
 import com.apcsa.model.User;
+import com.apcsa.model.Student;
+import com.apcsa.model.Teacher;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,7 +31,7 @@ public class Application {
         this.in = new Scanner(System.in);
 
         try {
-            PowerSchool.initialize(false);
+            PowerSchool.initialize(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,8 +64,7 @@ public class Application {
                     ? activeUser : null;
                 
                 if (isFirstLogin() && !activeUser.isRoot()) {
-                	System.out.println(((Administrator) activeUser).getLastName());
-                    System.out.print("As a new user, you must change your password. \nEnter your new password: ");
+                    System.out.print("\nAs a new user, you must change your password. \nEnter your new password: ");
                     String tempPassword = in.next();
                     activeUser.setPassword(tempPassword);
                     String hashedPassword = Utils.getHash(tempPassword);
@@ -121,13 +122,32 @@ public class Application {
     	}else if (user.isTeacher()) {
     		
     	}else if (user.isStudent()) {
-    		
+    		switch(getStudentSelection()) {
+    			case 1:
+    				//Student.viewCourseGrades();
+    				return true;
+    			case 2:
+    				//Student.viewAssignmentGradesByCourse();
+    				return true;
+    			case 3:
+    				System.out.println("\nEnter a new password:");
+    				String tempPassword = Utils.getHash((in.nextLine()));
+    				((Student) activeUser).changePassword(tempPassword);
+    				return true;
+    			case 4:
+    				return false;
+    				
+    		}
     	}else if (user.isRoot()) {
     		
     	}
     	
     	return true;
     }
+    
+    /*
+     * Requests selection from any administrator accounts.
+     */
     
     public int getAdminSelection() {
     	int output = 0;
@@ -148,6 +168,28 @@ public class Application {
 		} while (output < 1 || output > 7);
 		
 		return output;
+    }
+    
+    /*
+     * Requests selection from any student accounts.
+     */
+    
+    public int getStudentSelection() {
+    	int output = 0;
+    	do {
+    		System.out.println("\n[1] View course grades.");
+			System.out.println("[2] View assignment grades by course.");
+			System.out.println("[3] Change password.");
+			System.out.println("[4] Logout.");
+			try {
+				output = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nYour input was invalid. Please try again.\n");
+			}
+			in.nextLine();
+    	} while (output < 1 || output > 4);
+    	
+    	return output;
     }
 
     /**

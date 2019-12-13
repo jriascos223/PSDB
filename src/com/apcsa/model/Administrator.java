@@ -1,6 +1,9 @@
 package com.apcsa.model;
 
+import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
+
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -33,7 +36,6 @@ public class Administrator extends User {
 	}
 
 	public static void viewFaculty() {
-		// TODO Auto-generated method stub
 		
 	}
 

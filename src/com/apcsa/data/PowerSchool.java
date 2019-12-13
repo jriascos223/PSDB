@@ -159,6 +159,7 @@ public class PowerSchool {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                	System.out.println(rs.getString("grade_level"));
                     return new Student(user, rs);
                 }
             }
