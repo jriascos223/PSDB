@@ -64,7 +64,7 @@ public class Application {
                     ? activeUser : null;
                 
                 if (isFirstLogin() && !activeUser.isRoot()) {
-                    System.out.print("\nAs a new user, you must change your password. \nEnter your new password: ");
+                    System.out.print("\nAs a new user, you must change your password. \n\nEnter your new password: ");
                     String tempPassword = in.next();
                     activeUser.setPassword(tempPassword);
                     String hashedPassword = Utils.getHash(tempPassword);
@@ -73,7 +73,7 @@ public class Application {
 						Connection conn = PowerSchool.getConnection();
 						int success = PowerSchool.updatePassword(conn, activeUser.getUsername(), hashedPassword);
 						if (success == 1) {
-							System.out.println("Success!");
+							System.out.println("\nSuccess!\n");
 						}else if (success == -1) {
 							System.out.println("Something went wrong.");
 						}
@@ -115,6 +115,9 @@ public class Application {
     				Administrator.viewStudentEnrollmentByCourse();
     				return true;
     			case 6:
+    				System.out.println("\nEnter a new password:");
+    				String tempPassword = Utils.getHash((in.nextLine()));
+    				((Administrator) activeUser).changePassword(tempPassword);
     				return true;
     			case 7:
     				return false;

@@ -59,6 +59,18 @@ public class Administrator extends User {
 		
 	}
 
+	public void changePassword(String password) {
+		this.setPassword(password);
+		try {
+			Connection conn = PowerSchool.getConnection();
+			PowerSchool.updatePassword(conn, this.getUsername(), password);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 
     
     
