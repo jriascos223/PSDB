@@ -24,7 +24,7 @@ public class Application {
     
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { GRADES, GRADESBYCOURSE, PASSWORD, LOGOUT }
-    enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT}
+    enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
 
     /**
      * Creates an instance of the Application class, which is responsible for interacting
