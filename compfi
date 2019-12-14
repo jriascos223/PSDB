@@ -2,5 +2,5 @@
 
 dir=$(pwd -P)
 
-javac -classpath $dir/bin:$dir/lib/sqlite-jdbc-3.28.0.jar src/com/apcsa/controller/*.java src/com/apcsa/model/*.java src/com/apcsa/data/*.java
+javac -d bin src/com/apcsa/*/*.java 
 java -classpath $dir/bin:$dir/lib/sqlite-jdbc-3.28.0.jar src/com/apcsa/controller/Application.java

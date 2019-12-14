@@ -4,6 +4,8 @@ import com.apcsa.controller.Utils;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
 import com.apcsa.data.QueryUtils;
+
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.sql.Connection;
@@ -60,12 +62,17 @@ public class Administrator extends User {
 	public static void viewFacultyByDept(Scanner in) {
 		
 		System.out.println("\nChoose a department:\n");
+		int departmentCount = 0;
+		int selection = 0;
+		ArrayList<String> departmentNames = new ArrayList<String>();
 		
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_DEPARTMENTS);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					System.out.println(rs.getString("Departments"));
+					departmentNames.add((rs.getString("Departments")).replaceAll("\\[\\d\\]", "").replaceAll("\\.", ""));
+					departmentCount++;
 				}
 			} catch (SQLException e){
 				System.out.println(e);
@@ -75,13 +82,18 @@ public class Administrator extends User {
 			System.out.println(e);
 		}
 		
-		try {
-			int selection = in.nextInt();
-		} catch (InputMismatchException e) {
-			System.out.println("\nYour input was invalid. Please try again.\n");
-		} finally {
-			in.nextLine();
-		}
+		do {
+			try {
+				selection = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nYour input was invalid. Please try again.\n");
+			} finally {
+				in.nextLine();
+			}
+		} while (selection < 0 || selection > departmentCount);
+		
+		System.out.println(departmentNames);
+		
 		
 	}
 
