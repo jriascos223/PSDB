@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import com.apcsa.controller.Utils;
 import com.apcsa.model.Administrator;
@@ -23,7 +24,6 @@ public class PowerSchool {
 
     private final static String PROTOCOL = "jdbc:sqlite:";
     private final static String DATABASE_URL = "data/powerschool.db";
-    
 
     /**
      * Initializes the database if needed (or if requested).
@@ -34,15 +34,15 @@ public class PowerSchool {
 
     public static void initialize(boolean force) {
         if (force) {
-            reset();    // force reset
+            reset(); // force reset
         } else {
             boolean required = false;
 
             // check if all tables have been created and loaded in database
 
             try (Connection conn = getConnection();
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(QueryUtils.SETUP_SQL)) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(QueryUtils.SETUP_SQL)) {
 
                 while (rs.next()) {
                     if (rs.getInt("names") != 9) {
@@ -61,6 +61,7 @@ public class PowerSchool {
         }
     }
 
+
     /**
      * Retrieves the User object associated with the requested login.
      *
@@ -70,8 +71,7 @@ public class PowerSchool {
      */
 
     public static User login(String username, String password) {
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(QueryUtils.LOGIN_SQL)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(QueryUtils.LOGIN_SQL)) {
 
             stmt.setString(1, username);
             stmt.setString(2, Utils.getHash(password));
@@ -103,7 +103,7 @@ public class PowerSchool {
 
     public static User getAdministrator(User user) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_ADMIN_SQL)) {
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_ADMIN_SQL)) {
 
             stmt.setInt(1, user.getUserId());
 
@@ -128,7 +128,7 @@ public class PowerSchool {
 
     public static User getTeacher(User user) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_TEACHER_SQL)) {
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_TEACHER_SQL)) {
 
             stmt.setInt(1, user.getUserId());
 
@@ -153,7 +153,7 @@ public class PowerSchool {
 
     public static User getStudent(User user) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_SQL)) {
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_SQL)) {
 
             stmt.setInt(1, user.getUserId());
 
@@ -168,6 +168,47 @@ public class PowerSchool {
 
         return user;
     }
+
+    /*
+     * Creates an arraylist of the teachers in the database and returns it.
+     */
+
+    public static ArrayList<Teacher> getFaculty() {
+        ArrayList<Teacher> faculty = new ArrayList<Teacher>();
+         try (Connection conn = getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    faculty.add(new Teacher(rs));
+                }
+            }
+         } catch (SQLException e) {
+             System.out.println(e);
+         }
+
+         return faculty;
+     }
+
+     /*
+      * Creates an arraylist of students in the database and returns it.
+      */
+    public static ArrayList<Student> getStudents() {
+        ArrayList<Student> students = new ArrayList<Student>();
+        try (Connection conn = getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(new Student(rs));
+                }
+            }
+         } catch (SQLException e) {
+             System.out.println(e);
+         }
+
+         return students;
+    }
+
+
 
     /*
      * Establishes a connection to the database.
@@ -235,7 +276,6 @@ public class PowerSchool {
         		return -1;
         	}
         } catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return -1;
 		}

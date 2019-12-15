@@ -5,6 +5,7 @@ import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
 import com.apcsa.data.QueryUtils;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.sql.Connection;
@@ -17,7 +18,7 @@ public class Administrator extends User {
 	private int administratorId;
     private String firstName;
     private String lastName;
-    private String jobTitle;
+    public String jobTitle;
     
     public Administrator(User user, ResultSet rs) throws SQLException {
 		super(user);
@@ -27,6 +28,16 @@ public class Administrator extends User {
 		this.lastName = rs.getString("last_name");
 		this.jobTitle = rs.getString("job_title");
 		
+	}
+
+	//Constructor with only resultset
+	public Administrator(ResultSet rs) throws SQLException {
+		super(rs.getInt("user_id"), rs.getString("account_type"), rs.getString("username"), rs.getString("auth"), rs.getString("last_login"));
+		//user id, account type, username, password, last login
+		this.administratorId = rs.getInt("administrator_id");
+		this.firstName = rs.getString("first_name");
+		this.lastName = rs.getString("last_name");
+		this.jobTitle = rs.getString("job_title");
 	}
     
     /*
@@ -41,20 +52,10 @@ public class Administrator extends User {
 	}
 
 	public static void viewFaculty() {
-		try {
-			Connection conn = PowerSchool.getConnection();
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY);
-			
-			try (ResultSet rs = stmt.executeQuery()) {
-				System.out.print("\n");
-				while (rs.next()) {
-					System.out.println(rs.getString("Faculty"));
-				}
-			} catch (SQLException e) {
-				System.out.println(e);
-			}
-		} catch (SQLException e){
-			System.out.println(e);
+		ArrayList<Teacher> faculty = new ArrayList<Teacher>();
+		faculty = PowerSchool.getFaculty();
+		for (int i = 0; i < faculty.size(); i++) {
+			System.out.println(faculty.get(i).getLastName() + ", " +  faculty.get(i).getFirstName() + " / " + faculty.get(i).getDepartmentName());
 		}
 	}
 
@@ -68,7 +69,7 @@ public class Administrator extends User {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_DEPARTMENTS);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
-					System.out.println(rs.getString("Departments"));
+					System.out.println(rs.getString("Phrase"));
 					departmentCount++;
 				}
 			} catch (SQLException e){
@@ -88,40 +89,21 @@ public class Administrator extends User {
 				in.nextLine();
 			}
 		} while (selection < 0 || selection > departmentCount);
-		
-		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_FACULTY_BY_DEPT);
-			stmt.setInt(1, selection);
-			try (ResultSet rs = stmt.executeQuery()) {
-				System.out.print("\n");
-				while (rs.next()) {
-					System.out.println(rs.getString("Faculty"));
-				}
-			} catch (SQLException e) {
-				System.out.println(e);
+
+		ArrayList<Teacher> faculty = new ArrayList<Teacher>();
+		faculty = PowerSchool.getFaculty();
+		for (int i = 0; i < faculty.size(); i++) {
+			if (faculty.get(i).getDepartmentId() ==  selection) {
+				System.out.println(faculty.get(i).getLastName() + ", " +  faculty.get(i).getFirstName() + " / " + faculty.get(i).getDepartmentId());
 			}
-		} catch (SQLException e) {
-			System.out.println(e);
 		}
-		
-		
 	}
 
 	public static void viewStudentEnrollment() {
-		try {
-			Connection conn = PowerSchool.getConnection();
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS);
-			
-			try (ResultSet rs = stmt.executeQuery()) {
-				System.out.println("\n");
-				while (rs.next()) {
-					System.out.println(rs.getString("Students"));
-				}
-			} catch (SQLException e) {
-				System.out.println(e);
-			}
-		} catch (SQLException e) {
-			System.out.println(e);
+		ArrayList<Student> students = new ArrayList<Student>();
+		students = PowerSchool.getStudents();
+		for (int i = 0; i < students.size(); i++) {
+			System.out.println(students.get(i).getLastName() + ", " + students.get(i).getFirstName() + " / " + students.get(i).getGraduation());
 		}
 	}
 
@@ -137,9 +119,10 @@ public class Administrator extends User {
 
 	public void changePassword(Scanner in) {
 		System.out.println("\nEnter current password:");
-    	String currentPassword = in.nextLine();
-    	
-    	if (currentPassword.equals(this.password)) {
+		String currentPassword = in.nextLine();
+		currentPassword = Utils.getHash(currentPassword);
+
+    	if (currentPassword.equals(this.getPassword())) {
     		System.out.println("\nEnter a new password:");
     		String password = Utils.getHash((in.nextLine()));
     		this.setPassword(password);

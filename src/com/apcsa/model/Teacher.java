@@ -20,11 +20,33 @@ public class Teacher extends User {
     	this.teacherId = rs.getInt("teacher_id");
     	this.departmentId = rs.getInt("department_id");
     	this.firstName = rs.getString("first_name");
-    	this.lastName = rs.getString("last_name");
+        this.lastName = rs.getString("last_name");
     }
+
+    public Teacher(ResultSet rs) throws SQLException {
+		super(rs.getInt("user_id"), rs.getString("account_type"), rs.getString("username"), rs.getString("auth"), rs.getString("last_login"));
+		this.teacherId = rs.getInt("teacher_id");
+		this.firstName = rs.getString("first_name");
+		this.lastName = rs.getString("last_name");
+        this.departmentName = rs.getString("title");
+        this.departmentId = rs.getInt("department_id");
+	}
     
     public String getFirstName() {
     	return this.firstName;
     }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public String getDepartmentName() {
+        return this.departmentName;
+    }
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
 }
 

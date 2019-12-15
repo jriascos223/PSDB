@@ -89,8 +89,8 @@ public class Application {
     private void firstTimePassword() {
     	System.out.print("\nAs a new user, you must change your password. \n\nEnter your new password: ");
         String tempPassword = in.next();
-        activeUser.setPassword(tempPassword);
-        String hashedPassword = Utils.getHash(tempPassword);
+		String hashedPassword = Utils.getHash(tempPassword);
+		activeUser.setPassword(hashedPassword);
         
         try {
 			Connection conn = PowerSchool.getConnection();

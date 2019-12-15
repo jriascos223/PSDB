@@ -65,17 +65,21 @@ public class QueryUtils {
             "WHERE user_id = ?";
     
     public static String GET_FACULTY = 
-    	"SELECT last_name || ', ' || first_name || ' / ' || departments.title \"Faculty\" FROM teachers" +
-    		" INNER JOIN departments ON teachers.department_id=departments.department_id ORDER BY last_name";
+        "SELECT users.user_id, account_type, username, auth, last_login, teacher_id, first_name, last_name, title, teachers.department_id " + 
+            "FROM teachers " + 
+            "INNER JOIN users ON teachers.user_id=users.user_id " +
+            "INNER JOIN departments " +
+            "ON teachers.department_id=departments.department_id";
     
     public static String GET_STUDENTS = 
-    	"SELECT last_name || ', ' || first_name || ' / ' || graduation \"Students\" FROM students ORDER BY last_name";
+    "SELECT last_name, first_name, graduation, student_id, class_rank, grade_level, gpa, users.user_id, account_type, username, auth, last_login " +
+        "FROM students INNER JOIN users ON users.user_id = students.user_id ORDER BY last_name";
     
     public static String GET_DEPARTMENTS = 
-        "SELECT '[' || department_id || '] ' || title || '.' \"Departments\" FROM departments ORDER BY department_id;";
+        "SELECT '[' || department_id || '] ' || title || '.' \"Phrase\" FROM departments ORDER BY department_id;";
         
     public static String GET_FACULTY_BY_DEPT = 
-    "SELECT last_name || ', ' || first_name || ' / ' || departments.title \"Faculty\" FROM teachers " +
+    "SELECT last_name || ', ' || first_name || ' / ' || departments.title \"Phrase\" FROM teachers " +
         "INNER JOIN departments ON teachers.department_id=departments.department_id WHERE departments.department_id = ? ORDER BY last_name";
 
 }
