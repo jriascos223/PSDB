@@ -121,7 +121,7 @@ public class Application {
     				Administrator.viewStudentEnrollment();
     				return true;
     			case STUDENTBYGRADE:
-    				Administrator.viewStudentEnrollmentByGrade();
+    				Administrator.viewStudentEnrollmentByGrade(in);
     				return true;
     			case STUDENTBYCOURSE:
     				Administrator.viewStudentEnrollmentByCourse();
@@ -169,7 +169,7 @@ public class Application {
 			System.out.println("[4] View student enrollment by grade.");
 			System.out.println("[5] View student enrollment by course.");
 			System.out.println("[6] Change password.");
-			System.out.println("[7] Logout.\n");
+			System.out.println("[7] Logout.");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {

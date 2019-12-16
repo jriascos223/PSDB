@@ -99,7 +99,9 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewStudentEnrollment() {
+	public static void viewStudentEnrollment(){
+
+
 		ArrayList<Student> students = new ArrayList<Student>();
 		students = PowerSchool.getStudents();
 		for (int i = 0; i < students.size(); i++) {
@@ -107,8 +109,38 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewStudentEnrollmentByGrade() {
-		// TODO Auto-generated method stub
+	public static void viewStudentEnrollmentByGrade(Scanner in) {
+		System.out.println("\nChoose a grade:\n");
+		System.out.println("[1] Freshman.");
+		System.out.println("[2] Sophomore.");
+		System.out.println("[3] Junior.");
+		System.out.println("[4] Senior.");
+		int selection = 0;
+
+		do {
+			try {
+				selection = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nYour input was invalid. Please try again.");
+			} finally {
+				in.nextLine();
+			}
+		} while (selection < 0 || selection > 4);
+
+		selection += 8;
+
+
+		ArrayList<Student> students = new ArrayList<Student>();
+		students = PowerSchool.getStudents();
+
+		System.out.println("\nHERE --> " + selection);
+		System.out.println(students.get(2).getGradeLevel());
+
+		for (int i = 0; i < students.size(); i++) {
+			if (students.get(i).getGradeLevel() == selection) {
+				System.out.println(students.get(i).getLastName() + ", " + students.get(i).getFirstName() + " / " + students.get(i).getGraduation());
+			}
+		}
 		
 	}
 
