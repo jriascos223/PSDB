@@ -1,6 +1,7 @@
 package com.apcsa.model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.sql.ResultSet;
@@ -62,7 +63,7 @@ public class Student extends User {
 		return this.gradeLevel;
 	}
 
-	public int studentId() {
+	public int getStudentId() {
 		return this.studentId;
 	}
     
@@ -89,6 +90,21 @@ public class Student extends User {
     		System.out.println("\nIncorrect current password.");
     	}
 		
+	}
+
+	public void viewCourseGrades() {
+		System.out.print("\n");
+		try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement("SELECT course_grades.course_id, courses.title, students.student_id, students.first_name, students.last_name grade FROM course_grades INNER JOIN courses ON course_grades.course_id = courses.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE students.student_id = ?");
+			stmt.setInt(1, this.getStudentId());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					System.out.println(rs.getString("title") + " / " + rs.getInt("grade"));
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 	}
 
 	

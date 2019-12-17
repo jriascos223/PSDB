@@ -1,21 +1,9 @@
 package com.apcsa.controller;
 
-import java.util.Scanner;
-import com.apcsa.data.PowerSchool;
-import com.apcsa.data.QueryUtils;
-import com.apcsa.model.Administrator;
-import com.apcsa.model.User;
-import com.apcsa.model.Student;
-import com.apcsa.model.Teacher;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.InputMismatchException;
+import com.apcsa.data.*;
+import com.apcsa.model.*;
+import java.sql.*;
+import java.util.*;
 
 public class Application {
 
@@ -137,7 +125,7 @@ public class Application {
     	}else if (user.isStudent()) {
     		switch(getStudentSelection()) {
     			case GRADES:
-    				//Student.viewCourseGrades();
+    				((Student) activeUser).viewCourseGrades();
     				return true;
     			case GRADESBYCOURSE:
     				//Student.viewAssignmentGradesByCourse();
@@ -209,7 +197,7 @@ public class Application {
     		System.out.println("\n[1] View course grades.");
 			System.out.println("[2] View assignment grades by course.");
 			System.out.println("[3] Change password.");
-			System.out.println("[4] Logout.\n");
+			System.out.println("[4] Logout.");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
