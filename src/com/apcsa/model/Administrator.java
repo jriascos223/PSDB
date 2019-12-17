@@ -3,6 +3,7 @@ package com.apcsa.model;
 import com.apcsa.controller.Utils;
 import com.apcsa.data.PowerSchool;
 import com.apcsa.model.User;
+
 import com.apcsa.data.QueryUtils;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Administrator extends User {
 	private int administratorId;
     private String firstName;
     private String lastName;
-    public String jobTitle;
+	public String jobTitle;
     
     public Administrator(User user, ResultSet rs) throws SQLException {
 		super(user);
@@ -38,6 +39,8 @@ public class Administrator extends User {
 		this.firstName = rs.getString("first_name");
 		this.lastName = rs.getString("last_name");
 		this.jobTitle = rs.getString("job_title");
+
+
 	}
     
     /*
@@ -133,8 +136,6 @@ public class Administrator extends User {
 		ArrayList<Student> students = new ArrayList<Student>();
 		students = PowerSchool.getStudents();
 
-		System.out.println("\nHERE --> " + selection);
-		System.out.println(students.get(2).getGradeLevel());
 
 		for (int i = 0; i < students.size(); i++) {
 			if (students.get(i).getGradeLevel() == selection) {
@@ -144,8 +145,29 @@ public class Administrator extends User {
 		
 	}
 
-	public static void viewStudentEnrollmentByCourse() {
-		// TODO Auto-generated method stub
+	public static void viewStudentEnrollmentByCourse(Scanner in) {
+		System.out.print("\nCourse No.: ");
+		String selection = "";
+
+		try {
+			selection = in.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println(e);
+		}
+
+
+
+		try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT course_no, course_grades.student_id, course_grades.course_id, first_name, last_name, graduation FROM courses INNER JOIN course_grades ON courses.course_id = course_grades.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE course_no = ?");
+			stmt.setString(1, selection);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getInt("graduation"));
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 		
 	}
 

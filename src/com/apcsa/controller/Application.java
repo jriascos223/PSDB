@@ -124,7 +124,7 @@ public class Application {
     				Administrator.viewStudentEnrollmentByGrade(in);
     				return true;
     			case STUDENTBYCOURSE:
-    				Administrator.viewStudentEnrollmentByCourse();
+    				Administrator.viewStudentEnrollmentByCourse(in);
     				return true;
     			case PASSWORD:
     				((Administrator) activeUser).changePassword(in);

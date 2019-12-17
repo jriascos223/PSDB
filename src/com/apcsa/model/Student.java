@@ -1,8 +1,10 @@
 package com.apcsa.model;
 
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import com.apcsa.controller.Utils;
@@ -11,13 +13,13 @@ import com.apcsa.model.User;
 
 public class Student extends User {
 
-    private int studentId;
-    private int classRank;
-    private int gradeLevel;
-    private int graduationYear;
-    private double gpa;
-    private String firstName;
-    private String lastName;
+	private int studentId;
+	private int classRank;
+	private int gradeLevel;
+	private int graduationYear;
+	private double gpa;
+	private String firstName;
+	private String lastName;
     
     public Student(User user, ResultSet rs) throws SQLException {
     	super(user);
@@ -58,6 +60,10 @@ public class Student extends User {
 
 	public int getGradeLevel() {
 		return this.gradeLevel;
+	}
+
+	public int studentId() {
+		return this.studentId;
 	}
     
     
