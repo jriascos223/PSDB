@@ -54,7 +54,7 @@ public class Administrator extends User {
 		return lastName;
 	}
 
-	public static void viewFaculty() {
+	public void viewFaculty() {
 		ArrayList<Teacher> faculty = new ArrayList<Teacher>();
 		faculty = PowerSchool.getFaculty();
 		for (int i = 0; i < faculty.size(); i++) {
@@ -62,7 +62,7 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewFacultyByDept(Scanner in) {
+	public void viewFacultyByDept(Scanner in) {
 		
 		System.out.println("\nChoose a department:\n");
 		int departmentCount = 0;
@@ -102,7 +102,7 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewStudentEnrollment(){
+	public void viewStudentEnrollment(){
 
 
 		ArrayList<Student> students = new ArrayList<Student>();
@@ -112,7 +112,7 @@ public class Administrator extends User {
 		}
 	}
 
-	public static void viewStudentEnrollmentByGrade(Scanner in) {
+	public void viewStudentEnrollmentByGrade(Scanner in) {
 		System.out.println("\nChoose a grade:\n");
 		System.out.println("[1] Freshman.");
 		System.out.println("[2] Sophomore.");
@@ -145,7 +145,7 @@ public class Administrator extends User {
 		
 	}
 
-	public static void viewStudentEnrollmentByCourse(Scanner in) {
+	public void viewStudentEnrollmentByCourse(Scanner in) {
 		System.out.print("\nCourse No.: ");
 		String selection = "";
 

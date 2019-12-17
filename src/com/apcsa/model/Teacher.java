@@ -1,9 +1,11 @@
 package com.apcsa.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.*;
 
 import com.apcsa.model.User;
+import com.apcsa.data.*;
+import com.apcsa.controller.*;
 
 public class Teacher extends User {
 
@@ -47,6 +49,51 @@ public class Teacher extends User {
     public int getDepartmentId() {
         return departmentId;
     }
+
+    /*
+     * METHODS THAT DO ALL DATABASE MANIPULATION
+     */ 
+
+     public void enrollment() {
+
+     }
+
+     public void addAssignment() {
+
+     }
+
+     public void deleteAssignment() {
+
+     }
+
+     public void enterGrade() {
+
+     }
+
+     /*
+     * Function that both changes the property of the object as well as the data in the database.
+     */
+
+	public void changePassword(Scanner in) {
+		System.out.println("\nEnter current password:");
+    	String currentPassword = in.nextLine();
+    	
+    	if (currentPassword.equals(this.password)) {
+    		System.out.println("\nEnter a new password:");
+    		String password = Utils.getHash((in.nextLine()));
+    		this.setPassword(password);
+        	try {
+        		Connection conn = PowerSchool.getConnection();
+        		PowerSchool.updatePassword(conn, this.getUsername(), password);
+        	} catch (SQLException e){
+        		System.out.println(e);
+        	}
+    	}else {
+    		System.out.println("\nIncorrect current password.");
+    	}
+		
+    }
+    
 
 }
 

@@ -12,7 +12,8 @@ public class Application {
     
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { GRADES, GRADESBYCOURSE, PASSWORD, LOGOUT }
-    enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
+	enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
+	enum TeacherAction { ENROLLMENT, AASSIGNMENT, DASSIGNMENT, ENTERGRADE, PASSWORD, LOGOUT}
 
     /**
      * Creates an instance of the Application class, which is responsible for interacting
@@ -100,38 +101,40 @@ public class Application {
     	if (user.isAdministrator()) {
     		switch(getAdminSelection()) {
     			case FACULTY:
-    				Administrator.viewFaculty();
+    				((Administrator) user).viewFaculty();
     				return true;
     			case FACULTYBYDEPT:
-    				Administrator.viewFacultyByDept(in);
+    				((Administrator) user).viewFacultyByDept(in);
     				return true;
     			case STUDENT: 
-    				Administrator.viewStudentEnrollment();
+    				((Administrator) user).viewStudentEnrollment();
     				return true;
     			case STUDENTBYGRADE:
-    				Administrator.viewStudentEnrollmentByGrade(in);
+    				((Administrator) user).viewStudentEnrollmentByGrade(in);
     				return true;
     			case STUDENTBYCOURSE:
-    				Administrator.viewStudentEnrollmentByCourse(in);
+    				((Administrator) user).viewStudentEnrollmentByCourse(in);
     				return true;
     			case PASSWORD:
-    				((Administrator) activeUser).changePassword(in);
+    				((Administrator) user).changePassword(in);
     				return true;
     			case LOGOUT:
     				return false;
     		}
     	}else if (user.isTeacher()) {
-    		
+    		switch(getTeacherSelection()) {
+				case ENROLLMENT
+			}
     	}else if (user.isStudent()) {
     		switch(getStudentSelection()) {
     			case GRADES:
-    				((Student) activeUser).viewCourseGrades();
+    				((Student) user).viewCourseGrades();
     				return true;
     			case GRADESBYCOURSE:
-    				//Student.viewAssignmentGradesByCourse();
+    				((Student) user).viewAssignmentGradesByCourse(in);
     				return true;
     			case PASSWORD:
-    				((Student) activeUser).changePassword(in);
+    				((Student) user).changePassword(in);
     				return true;
     			case LOGOUT:
     				return false;
@@ -158,6 +161,7 @@ public class Application {
 			System.out.println("[5] View student enrollment by course.");
 			System.out.println("[6] Change password.");
 			System.out.println("[7] Logout.");
+			System.out.print("\n::: ");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
@@ -198,6 +202,7 @@ public class Application {
 			System.out.println("[2] View assignment grades by course.");
 			System.out.println("[3] Change password.");
 			System.out.println("[4] Logout.");
+			System.out.print("\n::: ");
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
@@ -218,7 +223,47 @@ public class Application {
     		default:
     			return null;
     	}
-    }
+	}
+	
+	/*
+	 *	Requests selection form any teacher accounts.
+	 */ 
+
+	public TeacherAction getTeacherSelection() {
+		int output = 0;
+		do {
+			System.out.println("[1] View enrollment by course.");
+			System.out.println("[2] Add assignment.");
+			System.out.println("[3] Delete assignment.");
+			System.out.println("[4] Enter grade.");
+			System.out.println("[5] Change password.");
+			System.out.println("[6] Logout.");
+			System.out.print("\n::: ");
+			try {
+				output = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println(e);
+			} finally {
+				in.nextLine();
+			}
+		} while (output > 6 || output < 1);
+
+		switch(output) {
+			case 1:
+				return TeacherAction.ENROLLMENT;
+			case 2:
+				return TeacherAction.AASSIGNMENT;
+			case 3:
+				return TeacherAction.DASSIGNMENT;
+			case 4:
+				return TeacherAction.ENTERGRADE;
+			case 5:
+				return TeacherAction.PASSWORD;
+			case 6:
+				return TeacherAction.LOGOUT;
+		}
+
+	}
 
     /**
      * Logs in with the provided credentials.
