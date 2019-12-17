@@ -11,7 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import com.apcsa.controller.Utils;
-import com.apcsa.data.PowerSchool;
+import com.apcsa.data.*;
 import com.apcsa.model.User;
 
 public class Student extends User {
@@ -97,7 +97,7 @@ public class Student extends User {
 	public void viewCourseGrades() {
 		System.out.print("\n");
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("SELECT courses.title, grade FROM course_grades INNER JOIN courses ON course_grades.course_id = courses.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE students.student_id = ?");
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
 			stmt.setInt(1, this.getStudentId());
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {

@@ -158,7 +158,7 @@ public class Administrator extends User {
 
 
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT course_no, course_grades.student_id, course_grades.course_id, first_name, last_name, graduation FROM courses INNER JOIN course_grades ON courses.course_id = course_grades.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE course_no = ?");
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE);
 			stmt.setString(1, selection);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
