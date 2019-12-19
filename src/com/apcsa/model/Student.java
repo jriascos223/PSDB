@@ -119,7 +119,7 @@ public class Student extends User {
 		String selectionString = "";
 		
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM course_grades INNER JOIN courses ON course_grades.course_id = courses.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE students.student_id = ?");
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
 			stmt.setInt(1, this.getStudentId());
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {

@@ -83,12 +83,12 @@ public class QueryUtils {
         "INNER JOIN departments ON teachers.department_id=departments.department_id WHERE departments.department_id = ? ORDER BY last_name";
 
     public static String GET_STUDENT_ENROLLMENT_BY_COURSE = 
-    "SELECT DISTINCT course_no, course_grades.student_id, course_grades.course_id, first_name, last_name, graduation FROM courses " +
+    "SELECT DISTINCT grade, course_no, course_grades.student_id, course_grades.course_id, first_name, last_name, graduation FROM courses " +
         "INNER JOIN course_grades ON courses.course_id = course_grades.course_id " + 
         "INNER JOIN students ON students.student_id = course_grades.student_id WHERE course_no = ?";
 
     public static String GET_STUDENT_COURSES = 
-    "SELECT courses.title, grade FROM course_grades " +
+    "SELECT courses.title, grade, courses.course_no FROM course_grades " +
         "INNER JOIN courses ON course_grades.course_id = courses.course_id " +
         "INNER JOIN students ON students.student_id = course_grades.student_id " +
         "WHERE students.student_id = ?";
@@ -98,4 +98,8 @@ public class QueryUtils {
         "INNER JOIN courses ON course_grades.course_id = courses.course_id " +
         "INNER JOIN students ON students.student_id = course_grades.student_id " +
         "WHERE students.student_id = ?";
+
+    public static String GET_TEACHER_COURSES = 
+        "SELECT * FROM teachers INNER JOIN courses ON teachers.teacher_id = courses.teacher_id WHERE teachers.teacher_id = ?";
+
 }

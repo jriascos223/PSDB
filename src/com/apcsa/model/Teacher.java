@@ -50,12 +50,59 @@ public class Teacher extends User {
         return departmentId;
     }
 
+    public int getTeacherId() {
+        return teacherId;
+    }
+
     /*
      * METHODS THAT DO ALL DATABASE MANIPULATION
      */ 
 
-     public void enrollment() {
+     public void enrollment(Scanner in) {
+        System.out.print("\n");
+		ArrayList<String> course_nos = new ArrayList<String>();
+		
+		int count = 1;
+		int input = 0;
+		
+		try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_TEACHER_COURSES);
+			stmt.setInt(1, this.getTeacherId());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					System.out.println("[" + count + "] " + rs.getString("course_no"));
+					count++;
+					course_nos.add(rs.getString("course_no"));
+				}
+			} catch (SQLException e) {
+				System.out.println(e);
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 
+		try {
+			input = in.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("\nYour input was invalid. Please try again.");
+		} finally {
+			in.nextLine();
+        }
+
+        System.out.print("\n");
+        try (Connection conn = PowerSchool.getConnection()) {
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE);
+             stmt.setString(1, course_nos.get(input - 1));
+             try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getInt("grade"));
+                }
+             }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        
+        
      }
 
      public void addAssignment() {

@@ -9,7 +9,6 @@ public class Application {
 
     private Scanner in;
     private User activeUser;
-    
     enum RootAction { PASSWORD, DATABASE, LOGOUT, SHUTDOWN }
     enum StudentAction { GRADES, GRADESBYCOURSE, PASSWORD, LOGOUT }
 	enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
@@ -123,7 +122,22 @@ public class Application {
     		}
     	}else if (user.isTeacher()) {
     		switch(getTeacherSelection()) {
-				case ENROLLMENT
+				case ENROLLMENT:
+					((Teacher) user).enrollment(in);
+					return true;
+				case AASSIGNMENT:
+					((Teacher) user).addAssignment();
+					return true;
+				case DASSIGNMENT:
+					((Teacher) user).deleteAssignment();
+					return true;
+				case ENTERGRADE:
+					((Teacher) user).enterGrade();
+					return true;
+				case PASSWORD:
+					((Teacher) user).changePassword(in);
+				case LOGOUT:
+					return false;
 			}
     	}else if (user.isStudent()) {
     		switch(getStudentSelection()) {
@@ -232,7 +246,7 @@ public class Application {
 	public TeacherAction getTeacherSelection() {
 		int output = 0;
 		do {
-			System.out.println("[1] View enrollment by course.");
+			System.out.println("\n[1] View enrollment by course.");
 			System.out.println("[2] Add assignment.");
 			System.out.println("[3] Delete assignment.");
 			System.out.println("[4] Enter grade.");
@@ -242,7 +256,7 @@ public class Application {
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println(e);
+				System.out.println("\nYour input was invalid. Please try again.\n");
 			} finally {
 				in.nextLine();
 			}
@@ -261,6 +275,8 @@ public class Application {
 				return TeacherAction.PASSWORD;
 			case 6:
 				return TeacherAction.LOGOUT;
+			default:
+				return null;
 		}
 
 	}
