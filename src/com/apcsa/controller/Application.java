@@ -244,7 +244,7 @@ public class Application {
 	 */ 
 
 	public TeacherAction getTeacherSelection() {
-		int output = 0;
+		int output = -1;
 		do {
 			System.out.println("\n[1] View enrollment by course.");
 			System.out.println("[2] Add assignment.");
@@ -257,9 +257,8 @@ public class Application {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
 				System.out.println("\nYour input was invalid. Please try again.\n");
-			} finally {
-				in.nextLine();
 			}
+			in.nextLine();
 		} while (output > 6 || output < 1);
 
 		switch(output) {

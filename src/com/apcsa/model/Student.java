@@ -187,7 +187,7 @@ public class Student extends User {
 			try (ResultSet rs = stmt.executeQuery()) {
 				System.out.print("\n");
 				while (rs.next()) {
-					System.out.println(rs.getString(selectionString));
+					System.out.println(rs.getInt("assignment_id") + ". " + rs.getString("title"));
 				}
 			}
 		} catch (SQLException e) {

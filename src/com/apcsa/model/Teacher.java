@@ -106,7 +106,12 @@ public class Teacher extends User {
      }
 
      public void addAssignment() {
-
+        try (Connection conn = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO \"main\".\"assignment_grades\" (\"course_id\", \"assignment_id\", \"student_id\", \"points_earned\", \"points_possible\", \"is_graded\") VALUES (4, 1, 11, 10, 10, 1);");
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
      }
 
      public void deleteAssignment() {
