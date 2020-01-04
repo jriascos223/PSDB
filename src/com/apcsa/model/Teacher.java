@@ -14,6 +14,7 @@ public class Teacher extends User {
     private String firstName;
     private String lastName;
     private String departmentName;
+    
 
 
     public Teacher(User user, ResultSet rs) throws SQLException {
@@ -60,26 +61,10 @@ public class Teacher extends User {
 
      public void enrollment(Scanner in) {
         System.out.print("\n");
-		ArrayList<String> course_nos = new ArrayList<String>();
 		
-		int count = 1;
-		int input = 0;
-		
-		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_TEACHER_COURSES);
-			stmt.setInt(1, this.getTeacherId());
-			try (ResultSet rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					System.out.println("[" + count + "] " + rs.getString("course_no"));
-					count++;
-					course_nos.add(rs.getString("course_no"));
-				}
-			} catch (SQLException e) {
-				System.out.println(e);
-			}
-		} catch (SQLException e) {
-			System.out.println(e);
-		}
+        int input = 0;
+        boolean assignments = false;
+        ArrayList<String> course_nos = getTeacherCourseSelection();
 
 		try {
 			input = in.nextInt();
@@ -95,7 +80,25 @@ public class Teacher extends User {
              stmt.setString(1, course_nos.get(input - 1));
              try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getInt("grade"));
+                    //Checks to see if assignments exist, as if they do, the grade must be shown.
+                    //If they don't exist, just "--" is put in place of the grade. 
+                    try (Connection conn2 = PowerSchool.getConnection()) {
+                        PreparedStatement stmt2 = conn2.prepareStatement("SELECT * FROM assignment_grades WHERE student_id = ?");
+                        stmt2.setInt(1, rs.getInt("STUDENT_ID"));
+                        try (ResultSet rs2 = stmt2.executeQuery()) {
+                            if (rs2.next()) {
+                                assignments = true;
+                            }
+                        }
+                    }
+                    
+                    if (assignments) {
+                        System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getInt("grade"));
+                    } else {
+                        System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + "--");
+                    }
+
+                assignments = false;
                 }
              }
         } catch (SQLException e) {
@@ -105,8 +108,26 @@ public class Teacher extends User {
         
      }
 
-     public void addAssignment() {
+     public void addAssignment(Scanner in) {
+        System.out.print("\n");
 
+        int input = 0;
+        ArrayList<String> course_nos = getTeacherCourseSelection();
+
+        try {
+			input = in.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("\nYour input was invalid. Please try again.");
+		} finally {
+			in.nextLine();
+        }
+
+        int mp = getMarkingPeriodSelection(in);
+
+        addAssignmentHelper(in, mp);
+
+
+        
      }
 
      public void deleteAssignment() {
@@ -141,6 +162,81 @@ public class Teacher extends User {
 		
     }
     
+    private ArrayList<String> getTeacherCourseSelection() {
+        ArrayList<String> course_nos = new ArrayList<String>();
+		
+        int count = 1;
+        
+        try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_TEACHER_COURSES);
+			stmt.setInt(1, this.getTeacherId());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					System.out.println("[" + count + "] " + rs.getString("course_no"));
+					count++;
+					course_nos.add(rs.getString("course_no"));
+				}
+			} catch (SQLException e) {
+				System.out.println(e);
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+        }
+
+
+        return course_nos;
+    }
+
+    private int getMarkingPeriodSelection(Scanner in) {
+        int output = 0;
+        do {
+            System.out.println("[1] MP1 Assignment.");
+            System.out.println("[2] MP2 Assignment.");
+            System.out.println("[3] MP3 Assignment.");
+            System.out.println("[4] MP3 Assignment.");
+            System.out.println("[5] Midterm exam.");
+            System.out.println("[6] Final exam.");
+
+            try {
+                output = in.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("\nYour input was invalid. Please try again.\n");
+            }
+            in.nextLine();
+        } while (output < 1 || output > 6);
+
+        
+
+        return output;
+    }
+
+    private void addAssignmentHelper(Scanner in, int mp) {
+        String assignmentTitle = "";
+        int pointValue = -1;
+
+
+        System.out.println("Assignment Title: ");
+        try {
+            assignmentTitle = in.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Your input was invalid. Please try again.");
+            addAssignmentHelper(in, mp);
+        }
+
+        System.out.println("Point Value: ");
+        while (pointValue > 100 || pointValue < 1) {
+            try {
+                pointValue = in.nextInt();
+            } catch (Exception e){
+                System.out.println("Point values must be between 1 and 100.");
+            }
+
+            if (pointValue > 100 || pointValue < 1) {
+                System.out.println("Point values must be between 1 and 100.");
+            }
+        }
+        
+    }
 
 }
 

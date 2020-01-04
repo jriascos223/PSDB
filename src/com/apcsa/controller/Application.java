@@ -126,7 +126,7 @@ public class Application {
 					((Teacher) user).enrollment(in);
 					return true;
 				case AASSIGNMENT:
-					((Teacher) user).addAssignment();
+					((Teacher) user).addAssignment(in);
 					return true;
 				case DASSIGNMENT:
 					((Teacher) user).deleteAssignment();

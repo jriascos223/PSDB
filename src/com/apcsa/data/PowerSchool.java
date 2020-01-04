@@ -318,4 +318,8 @@ public class PowerSchool {
             e.printStackTrace();
         }
     }
+
+    public static boolean isResultSetEmpty(ResultSet resultSet) throws SQLException {
+        return !resultSet.first();
+    }
 }
