@@ -124,13 +124,27 @@ public class Teacher extends User {
 
         int mp = getMarkingPeriodSelection(in);
 
-        addAssignmentHelper(in, mp);
+        try {
+            addAssignmentHelper(in, mp, course_nos.get(input - 1));
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+        // try (Connection conn = PowerSchool.getConnection()) {
+        //     try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO assignment_grades (course_id, assignment_id, student_id, points_earned, points_possible, is_graded) VALUES (8, 1, 11, 10, 10, 1)")) {
+        //         stmt.executeUpdate();
+        //     }
+        // } catch (SQLException e) {
+
+        // }
+        
 
 
         
      }
 
      public void deleteAssignment() {
+        
 
      }
 
@@ -190,7 +204,7 @@ public class Teacher extends User {
     private int getMarkingPeriodSelection(Scanner in) {
         int output = 0;
         do {
-            System.out.println("[1] MP1 Assignment.");
+            System.out.println("\n[1] MP1 Assignment.");
             System.out.println("[2] MP2 Assignment.");
             System.out.println("[3] MP3 Assignment.");
             System.out.println("[4] MP3 Assignment.");
@@ -210,31 +224,59 @@ public class Teacher extends User {
         return output;
     }
 
-    private void addAssignmentHelper(Scanner in, int mp) {
+    private void addAssignmentHelper(Scanner in, int mp, String title) throws SQLException {
         String assignmentTitle = "";
         int pointValue = -1;
 
 
-        System.out.println("Assignment Title: ");
+        System.out.print("Assignment Title: ");
         try {
             assignmentTitle = in.nextLine();
         } catch (InputMismatchException e) {
             System.out.println("Your input was invalid. Please try again.");
-            addAssignmentHelper(in, mp);
+            addAssignmentHelper(in, mp, title);
         }
 
-        System.out.println("Point Value: ");
+        System.out.print("Point Value: ");
         while (pointValue > 100 || pointValue < 1) {
             try {
                 pointValue = in.nextInt();
-            } catch (Exception e){
-                System.out.println("Point values must be between 1 and 100.");
+            } catch (InputMismatchException e){
+                System.out.println("Incorrect input.");
             }
+            in.nextLine();
 
             if (pointValue > 100 || pointValue < 1) {
                 System.out.println("Point values must be between 1 and 100.");
             }
         }
+
+        boolean intent = Utils.confirm(in, "Are you sure you want to create this assignment? (y/n) ");
+
+        if (intent) {
+            //get course id from title
+            int course_id = 0;
+            
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT course_id FROM courses WHERE course_no = ?");
+                stmt.setString(1, title);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        course_id = rs.getInt("course_id");
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+
+
+            System.out.println(course_id);
+
+        }
+
+
         
     }
 

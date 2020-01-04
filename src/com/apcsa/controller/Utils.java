@@ -2,8 +2,10 @@ package com.apcsa.controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import com.apcsa.data.PowerSchool;
 
 public class Utils {
 
@@ -48,6 +50,27 @@ public class Utils {
             return invalid;                     // return default in the even of an type mismatch
         } finally {
             in.nextLine();                      // always consume the dangling newline character
+        }
+    }
+
+    public static boolean confirm(Scanner in, String message) {
+        String response = "";
+        
+        // prompt user for explicit response of yes or no
+        
+        while (!response.equals("y") && !response.equals("n")) {
+            System.out.print(message);
+            response = in.next().toLowerCase();
+        }
+        
+        return response.equals("y");
+    }
+
+    public static int generateAssignmentId() {
+        try (Connection conn = PowerSchool.getConnection()) {
+
+        } catch (SQLException e) {
+            System.out.println(e);
         }
     }
 }
