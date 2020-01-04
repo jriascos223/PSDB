@@ -3,6 +3,9 @@ package com.apcsa.controller;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
@@ -68,7 +71,10 @@ public class Utils {
 
     public static int generateAssignmentId() {
         try (Connection conn = PowerSchool.getConnection()) {
-
+            PreparedStatement stmt = conn.prepareStatement("SELECT assignment_id FROM assignments");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while
+            }
         } catch (SQLException e) {
             System.out.println(e);
         }

@@ -271,8 +271,11 @@ public class Teacher extends User {
                 System.out.println(e);
             }
 
+            //next follows generating an assignment id
+            Utils.generateAssignmentId();
 
-            System.out.println(course_id);
+
+
 
         }
 
