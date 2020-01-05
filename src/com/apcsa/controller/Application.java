@@ -132,7 +132,7 @@ public class Application {
 					((Teacher) user).deleteAssignment(in);
 					return true;
 				case ENTERGRADE:
-					((Teacher) user).enterGrade();
+					((Teacher) user).enterGrade(in);
 					return true;
 				case PASSWORD:
                     ((Teacher) user).changePassword(in);

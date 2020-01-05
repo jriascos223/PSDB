@@ -70,8 +70,9 @@ public class Student extends User {
 	}
     
     
-    /*
+    /**
      * Function that both changes the property of the object as well as the data in the database.
+     * @param in the Scanner
      */
 
 	public void changePassword(Scanner in) {

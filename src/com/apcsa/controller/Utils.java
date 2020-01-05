@@ -57,6 +57,13 @@ public class Utils {
         }
     }
 
+    /**
+     * 
+     * @param in the Scanner
+     * @param message message to be displayed
+     * @return boolean that either confirms yes or no
+     */
+
     public static boolean confirm(Scanner in, String message) {
         String response = "";
         
@@ -69,6 +76,11 @@ public class Utils {
         
         return response.equals("y");
     }
+
+    /**
+     * Generates assignment id by looking at currently existing assignments table.
+     * @return newest assignment id
+     */
 
     public static int generateAssignmentId() {
         ArrayList<Integer> ids = new ArrayList<Integer>();

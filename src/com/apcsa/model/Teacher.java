@@ -16,7 +16,12 @@ public class Teacher extends User {
     private String departmentName;
     
 
-
+    /**
+     * Teacher constructor with only a ResultSet and user.
+     * @param user user (in most cases active user)
+     * @param rs ResultSet
+     * @throws SQLException
+     */
     public Teacher(User user, ResultSet rs) throws SQLException {
     	super(user);
     	
@@ -26,6 +31,11 @@ public class Teacher extends User {
         this.lastName = rs.getString("last_name");
     }
 
+    /**
+     * Teacher constructor with only a ResultSet.
+     * @param rs ResultSet
+     * @throws SQLException
+     */
     public Teacher(ResultSet rs) throws SQLException {
 		super(rs.getInt("user_id"), rs.getString("account_type"), rs.getString("username"), rs.getString("auth"), rs.getString("last_login"));
 		this.teacherId = rs.getInt("teacher_id");
@@ -59,11 +69,17 @@ public class Teacher extends User {
      * METHODS THAT DO ALL DATABASE MANIPULATION
      */ 
 
+     /**
+      * Method that checks students enrolled in a course and displays either their active grade
+      * or no grade if they currently have no assignments. 
+      * @param in the Scanner
+      */
+
      public void enrollment(Scanner in) {
 		
         int input = 0;
         boolean assignments = false;
-        ArrayList<String> course_nos = getTeacherCourseSelection();
+        ArrayList<String> course_nos = getTeacherCourseList();
 
 		try {
 			input = in.nextInt();
@@ -107,10 +123,14 @@ public class Teacher extends User {
         
      }
 
+     /**
+      * Method that adds an assignment by asking for a course, marking period, and weight in points.
+      * @param in the Scanner
+      */
      public void addAssignment(Scanner in) {
 
         int courseInput = 0;
-        ArrayList<String> course_nos = getTeacherCourseSelection();
+        ArrayList<String> course_nos = getTeacherCourseList();
 
         try {
 			courseInput = in.nextInt();
@@ -130,10 +150,14 @@ public class Teacher extends User {
 
      }
 
+     /**
+      * Method that deletes an assignment by asking for a course, marking period, and assignment selection.
+      * @param in
+      */
      public void deleteAssignment(Scanner in) {
 
         int courseInput = 0;
-        ArrayList<String> course_nos = getTeacherCourseSelection();
+        ArrayList<String> course_nos = getTeacherCourseList();
 
         try {
 			courseInput = in.nextInt();
@@ -152,9 +176,10 @@ public class Teacher extends User {
 
      }
 
-     /*
-     * Function that both changes the property of the object as well as the data in the database.
-     */
+     /**
+      * Function that changes both the password property of the object as well as the password in the database.
+      * @param in the Scanner
+      */
 
 	public void changePassword(Scanner in) {
 		System.out.println("\nEnter current password:");
@@ -177,7 +202,11 @@ public class Teacher extends User {
 		
     }
     
-    private ArrayList<String> getTeacherCourseSelection() {
+    /**
+     * Method that obtains a course list as well as displays the list of courses. 
+     * @return an ArrayList of the course numbers (ex: EN4000).
+     */
+    private ArrayList<String> getTeacherCourseList() {
         System.out.print("\n");
         ArrayList<String> course_nos = new ArrayList<String>();
 		
@@ -203,6 +232,11 @@ public class Teacher extends User {
         return course_nos;
     }
 
+    /**
+     * Obtains marking period selection.
+     * @param in the Scanner
+     * @return selection integer
+     */
     private int getMarkingPeriodSelection(Scanner in) {
         int output = 0;
         do {
