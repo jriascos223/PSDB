@@ -91,7 +91,7 @@ public class Teacher extends User {
 
         System.out.print("\n");
         try (Connection conn = PowerSchool.getConnection()) {
-             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE);
+             PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_NO);
              stmt.setString(1, course_nos.get(input - 1));
              try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -172,8 +172,21 @@ public class Teacher extends User {
         deleteAssignmentHelper(in, mp, course_nos.get(courseInput - 1));
      }
 
-     public void enterGrade() {
+     public void enterGrade(Scanner in) {
+        int courseInput = 0;
+        ArrayList<String> course_nos = getTeacherCourseList();
 
+        try {
+			courseInput = in.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("\nYour input was invalid. Please try again.");
+		} finally {
+			in.nextLine();
+        }
+
+        int mp = getMarkingPeriodSelection(in);
+
+        enterGradeHelper(in, mp, course_nos.get(courseInput - 1));
      }
 
      /**
@@ -294,21 +307,7 @@ public class Teacher extends User {
 
         if (intent) {
             //get course id from title
-            int course_id = 0;
-            
-            try (Connection conn = PowerSchool.getConnection()) {
-                PreparedStatement stmt = conn.prepareStatement("SELECT course_id FROM courses WHERE course_no = ?");
-                stmt.setString(1, title);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        course_id = rs.getInt("course_id");
-                    }
-                } catch (SQLException e) {
-                    System.out.println(e);
-                }
-            } catch (SQLException e) {
-                System.out.println(e);
-            }
+            int course_id = this.getCourseIdFromTitle(title);
 
             //next follows generating an assignment id
             int assignment_id = Utils.generateAssignmentId();
@@ -333,21 +332,7 @@ public class Teacher extends User {
     private void deleteAssignmentHelper(Scanner in, int mp, String title) {
 
         //get course id from title
-        int course_id = 0;
-            
-        try (Connection conn = PowerSchool.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT course_id FROM courses WHERE course_no = ?");
-            stmt.setString(1, title);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    course_id = rs.getInt("course_id");
-                }
-            } catch (SQLException e) {
-                System.out.println(e);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
+        int course_id = this.getCourseIdFromTitle(title);
 
 
         ArrayList<String> assignments = new ArrayList<String>();
@@ -410,11 +395,153 @@ public class Teacher extends User {
             System.out.println("\nNo assignments to show.");
         }
 
+    }
 
+    private void enterGradeHelper(Scanner in, int mp, String title) {
+        //get course id from title
+        int course_id = this.getCourseIdFromTitle(title);
+
+        //maybe make into individual object?
+        //this gets the assignment names, points, and ids and puts them into arrays
+        ArrayList<String> assignments = new ArrayList<String>();
+        ArrayList<Integer> assignmentPoints = new ArrayList<Integer>();
+        ArrayList<Integer> assignmentIds = new ArrayList<Integer>();
+        String statement = !(mp > 4) ? "SELECT * FROM assignments WHERE course_id = ? AND marking_period = ?" 
+        : (mp == 5) ? "SELECT * FROM assignments WHERE course_id = ? AND is_midterm = 1" : "SELECT * FROM assignments WHERE course_id = ? AND is_final = 1";
+
+        try (Connection conn = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(statement);
+            stmt.setInt(1, course_id);
+            if (mp > 0 && mp < 5) {
+                stmt.setInt(2, mp);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    assignments.add(rs.getString("title"));
+                    assignmentPoints.add(rs.getInt("point_value"));
+                    assignmentIds.add(rs.getInt("assignment_id"));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+        //this gets the specific assignment that the user wants
+        if (assignments.size() != 0) {
+            System.out.println("\nChoose an assignment. ");
+            for (int i = 0; i < assignments.size(); i++) {
+                System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
+            }
+
+            int assignmentSelection = -1;
+
+            while (assignmentSelection > assignments.size() || assignmentSelection < 0) {
+                try {
+                    assignmentSelection = in.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("\nYour input was invalid. Please try again.");
+                    System.out.println("\nChoose an assignment. ");
+                    for (int i = 0; i < assignments.size(); i++) {
+                        System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
+                    }
+                    System.out.print("\n");
+                } finally {
+                    in.nextLine();
+                }
+            }
+
+            //gets the students in the course
+            ArrayList<Student> studentsInCourse = new ArrayList<Student>();
+            System.out.println("Choose a student: ");
+            try (Connection conn  = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_ID);
+                stmt.setInt(1, course_id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    int i = 1;
+                    while (rs.next()) {
+                        studentsInCourse.add(new Student(rs));
+                        System.out.printf("[%d] %s, %s\n", i, rs.getString("last_name"), rs.getString("first_name"));
+                        i++;
+                    }
+                }
+                
+                
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+
+            int studentSelection = 0;
+            while (studentSelection > studentsInCourse.size() || studentSelection < 0) {
+                try {
+                    studentSelection = in.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("\nYour input was invalid. Please try again.");
+                    System.out.println("Choose a student: ");
+                    try (Connection conn  = PowerSchool.getConnection()) {
+                        PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_ID);
+                        stmt.setInt(1, course_id);
+                        try (ResultSet rs = stmt.executeQuery()) {
+                            int i = 1;
+                            while (rs.next()) {
+                                studentsInCourse.add(new Student(rs));
+                                System.out.printf("[%d] %s, %s\n", i, rs.getString("last_name"), rs.getString("first_name"));
+                                i++;
+                            }
+                        }
+                    } catch (SQLException f) {
+                        System.out.println(f);
+                    }
+                } finally {
+                    in.nextLine();
+                }
+            }
+            
+
+            ArrayList<Integer> currentGrades = new ArrayList<Integer>();
+            String noGrade = "--";
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignment_grades WHERE student_id = ? AND course_id = ? AND assignment_id = ?");
+                stmt.setInt(1, studentsInCourse.get(studentSelection).getStudentId());
+                stmt.setInt(2, course_id);
+                stmt.setInt(3, assignmentIds.get(assignmentSelection));
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        currentGrades.add(rs.getInt("points_earned"));
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+
+            System.out.printf("Assignment: %s (%d pts)\n", assignments.get(assignmentSelection), assignmentPoints.get(assignmentSelection));
+            System.out.printf("Student: %s, %s\n", studentsInCourse.get(studentSelection).getLastName(), studentsInCourse.get(studentSelection).getFirstName());
+            System.out.printf("Current Grade: %s\n", (currentGrades.size() == 0) ? noGrade : Integer.toString(currentGrades.get(0)));
+            
+            System.out.println("New Grade: ");
+        } else {
+            System.out.println("\nNo assignments to show.");
+        }
 
         
 
+    }
 
+    private int getCourseIdFromTitle(String title) {
+        try (Connection conn = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT course_id FROM courses WHERE course_no = ?");
+            stmt.setString(1, title);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("course_id");
+                }
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return -1;
     }
 }
 

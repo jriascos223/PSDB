@@ -158,7 +158,7 @@ public class Administrator extends User {
 
 
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE);
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_NO);
 			stmt.setString(1, selection);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
