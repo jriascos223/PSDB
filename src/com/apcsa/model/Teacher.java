@@ -145,10 +145,7 @@ public class Teacher extends User {
 
         int mp = getMarkingPeriodSelection(in);
 
-
         deleteAssignmentHelper(in, mp, course_nos.get(courseInput - 1));
-
-
      }
 
      public void enterGrade() {
@@ -359,15 +356,27 @@ public class Teacher extends User {
                     for (int i = 0; i < assignments.size(); i++) {
                         System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
                     }
+                    System.out.print("\n");
                 } finally {
                     in.nextLine();
                 }
             }
+
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM assignments WHERE course_id = ? AND title = ?");
+                stmt.setInt(1, course_id);
+                stmt.setString(2, assignments.get(assignmentSelection - 1));
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+
+            System.out.printf("\nSuccessfully deleted %s.", assignments.get(assignmentSelection - 1));
         } else {
             System.out.println("\nNo assignments to show.");
         }
 
-        
+
 
         
 
