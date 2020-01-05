@@ -129,13 +129,14 @@ public class Application {
 					((Teacher) user).addAssignment(in);
 					return true;
 				case DASSIGNMENT:
-					((Teacher) user).deleteAssignment();
+					((Teacher) user).deleteAssignment(in);
 					return true;
 				case ENTERGRADE:
 					((Teacher) user).enterGrade();
 					return true;
 				case PASSWORD:
-					((Teacher) user).changePassword(in);
+                    ((Teacher) user).changePassword(in);
+                    return true;
 				case LOGOUT:
 					return false;
 			}
@@ -250,15 +251,15 @@ public class Application {
 			System.out.println("[2] Add assignment.");
 			System.out.println("[3] Delete assignment.");
 			System.out.println("[4] Enter grade.");
-			System.out.println("[5] Change password.");
+            System.out.println("[5] Change password.");
 			System.out.println("[6] Logout.");
 			System.out.print("\n::: ");
 			try {
-				output = in.nextInt();
+                output = in.nextInt();
 			} catch (InputMismatchException e) {
 				System.out.println("\nYour input was invalid. Please try again.\n");
 			}
-			in.nextLine();
+            in.nextLine();
 		} while (output > 6 || output < 1);
 
 		switch(output) {

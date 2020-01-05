@@ -76,7 +76,8 @@ public class Student extends User {
 
 	public void changePassword(Scanner in) {
 		System.out.println("\nEnter current password:");
-    	String currentPassword = in.nextLine();
+        String currentPassword = in.nextLine();
+        currentPassword = Utils.getHash(currentPassword);
     	
     	if (currentPassword.equals(this.password)) {
     		System.out.println("\nEnter a new password:");
