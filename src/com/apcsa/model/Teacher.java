@@ -225,8 +225,13 @@ public class Teacher extends User {
     }
 
     private void addAssignmentHelper(Scanner in, int mp, String title) throws SQLException {
+        int isFinal = (mp == 6) ? 1 : 0;
+        int isMidterm = (mp == 5) ? 1 : 0;
+        int markingPeriod = (mp > 4) ? 0 : mp;
         String assignmentTitle = "";
         int pointValue = -1;
+
+
 
 
         System.out.print("Assignment Title: ");
@@ -272,7 +277,22 @@ public class Teacher extends User {
             }
 
             //next follows generating an assignment id
-            Utils.generateAssignmentId();
+            int assignment_id = Utils.generateAssignmentId();
+
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("INSERT INTO assignments (course_id, assignment_id, marking_period, is_midterm, is_final, title, point_value) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                stmt.setInt(1, course_id);
+                stmt.setInt(2, assignment_id);
+                stmt.setInt(3, markingPeriod);
+                stmt.setInt(4, isMidterm);
+                stmt.setInt(5, isFinal);
+                stmt.setString(6, assignmentTitle);
+                stmt.setInt(7, pointValue);
+
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
 
 
 

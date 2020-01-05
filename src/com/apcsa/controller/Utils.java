@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import com.apcsa.data.PowerSchool;
@@ -70,13 +71,24 @@ public class Utils {
     }
 
     public static int generateAssignmentId() {
+        ArrayList<Integer> ids = new ArrayList<Integer>();
         try (Connection conn = PowerSchool.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement("SELECT assignment_id FROM assignments");
             try (ResultSet rs = stmt.executeQuery()) {
-                while
+                while (rs.next()) {
+                    ids.add(rs.getInt("assignment_id"));
+                }
             }
         } catch (SQLException e) {
             System.out.println(e);
         }
+
+        if (ids.size() == 0) {
+            return 1;
+        }else if (ids.size() != 0) {
+            return ids.get(ids.size() - 1) + 1;
+        }
+
+        return -1;
     }
 }
