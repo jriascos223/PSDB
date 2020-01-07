@@ -114,6 +114,7 @@ public class Student extends User {
 	public void viewAssignmentGradesByCourse(Scanner in) {
 		System.out.print("\n");
 		ArrayList<String> course_nos = new ArrayList<String>();
+		ArrayList<String> course_ids = new ArrayList<String>();
 		
 		int count = 1;
 		int input = 0;
@@ -128,6 +129,7 @@ public class Student extends User {
 					System.out.println("[" + count + "] " + rs.getString("course_no"));
 					count++;
 					course_nos.add(rs.getString("course_no"));
+					course_ids.add(rs.getString("course_id"));
 				}
 			} catch (SQLException e) {
 				System.out.println(e);
@@ -183,18 +185,21 @@ public class Student extends User {
 
 
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM courses INNER JOIN course_grades ON courses.course_id = course_grades.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE students.student_id = ? AND courses.course_no = ?");
+			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignment_grades INNER JOIN assignments ON assignment_grades.assignment_id = assignments.assignment_id WHERE student_id = ? AND assignment_grades.course_id = ?");
 			stmt.setInt(1, this.getStudentId());
-			stmt.setString(2, course_nos.get(input - 1));
+			stmt.setString(2, course_ids.get(input - 1));
 			try (ResultSet rs = stmt.executeQuery()) {
 				System.out.print("\n");
+				int assignmentCount = 1;
 				while (rs.next()) {
-					System.out.println(rs.getInt("assignment_id") + ". " + rs.getString("title"));
+					System.out.printf("%d. %s / %d (out of %d pts)", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
+					assignmentCount++;
 				}
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
 		}
+		System.out.print("\n");
 	}
 
 }

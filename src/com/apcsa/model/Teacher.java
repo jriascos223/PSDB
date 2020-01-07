@@ -256,7 +256,7 @@ public class Teacher extends User {
             System.out.println("\n[1] MP1 Assignment.");
             System.out.println("[2] MP2 Assignment.");
             System.out.println("[3] MP3 Assignment.");
-            System.out.println("[4] MP3 Assignment.");
+            System.out.println("[4] MP4 Assignment.");
             System.out.println("[5] Midterm exam.");
             System.out.println("[6] Final exam.");
             System.out.print("\n::: ");
@@ -337,6 +337,7 @@ public class Teacher extends User {
 
         ArrayList<String> assignments = new ArrayList<String>();
         ArrayList<Integer> assignmentPoints = new ArrayList<Integer>();
+        ArrayList<Integer> assignmentIds = new ArrayList<Integer>();
         String statement = !(mp > 4) ? "SELECT * FROM assignments WHERE course_id = ? AND marking_period = ?" 
         : (mp == 5) ? "SELECT * FROM assignments WHERE course_id = ? AND is_midterm = 1" : "SELECT * FROM assignments WHERE course_id = ? AND is_final = 1";
 
@@ -350,6 +351,7 @@ public class Teacher extends User {
                 while (rs.next()) {
                     assignments.add(rs.getString("title"));
                     assignmentPoints.add(rs.getInt("point_value"));
+                    assignmentIds.add(rs.getInt("assignment_id"));
                 }
             }
 
@@ -360,9 +362,13 @@ public class Teacher extends User {
 
         if (assignments.size() != 0) {
             System.out.println("\nChoose an assignment. ");
+            
             for (int i = 0; i < assignments.size(); i++) {
                 System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
             }
+            System.out.print("\n::: ");
+
+            
 
             int assignmentSelection = -1;
 
@@ -372,25 +378,36 @@ public class Teacher extends User {
                 } catch (InputMismatchException e) {
                     System.out.println("\nYour input was invalid. Please try again.");
                     System.out.println("\nChoose an assignment. ");
+                    
                     for (int i = 0; i < assignments.size(); i++) {
                         System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
                     }
-                    System.out.print("\n");
+                    System.out.print("\n::: ");
                 } finally {
                     in.nextLine();
                 }
+                
             }
 
             try (Connection conn = PowerSchool.getConnection()) {
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM assignments WHERE course_id = ? AND title = ?");
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM assignments WHERE course_id = ? AND assignment_id = ?");
                 stmt.setInt(1, course_id);
-                stmt.setString(2, assignments.get(assignmentSelection - 1));
+                stmt.setInt(2, assignmentIds.get(assignmentSelection - 1));
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e);
             }
 
-            System.out.printf("\nSuccessfully deleted %s.", assignments.get(assignmentSelection - 1));
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM assignment_grades WHERE course_id = ? AND assignment_id = ?");
+                stmt.setInt(1, course_id);
+                stmt.setInt(2, assignmentIds.get(assignmentSelection - 1));
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+
+            System.out.printf("\nSuccessfully deleted %s.\n", assignments.get(assignmentSelection - 1));
         } else {
             System.out.println("\nNo assignments to show.");
         }
@@ -430,9 +447,11 @@ public class Teacher extends User {
         //this gets the specific assignment that the user wants
         if (assignments.size() != 0) {
             System.out.println("\nChoose an assignment. ");
+            
             for (int i = 0; i < assignments.size(); i++) {
                 System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
             }
+            System.out.print("\n::: ");
 
             int assignmentSelection = -1;
 
@@ -445,15 +464,16 @@ public class Teacher extends User {
                     for (int i = 0; i < assignments.size(); i++) {
                         System.out.printf("[%d] %s (%d pts)\n", i + 1, assignments.get(i), assignmentPoints.get(i));
                     }
-                    System.out.print("\n");
+                    System.out.print("\n::: ");
                 } finally {
                     in.nextLine();
                 }
             }
+            
 
             //gets the students in the course
             ArrayList<Student> studentsInCourse = new ArrayList<Student>();
-            System.out.println("Choose a student: ");
+            System.out.println("\nChoose a student: ");
             try (Connection conn  = PowerSchool.getConnection()) {
                 PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_ID);
                 stmt.setInt(1, course_id);
@@ -471,8 +491,10 @@ public class Teacher extends User {
                 System.out.println(e);
             }
 
+            System.out.print("\n::: ");
+
             int studentSelection = 0;
-            while (studentSelection > studentsInCourse.size() || studentSelection < 0) {
+            while (studentSelection > studentsInCourse.size() || studentSelection < 1) {
                 try {
                     studentSelection = in.nextInt();
                 } catch (InputMismatchException e) {
@@ -502,11 +524,12 @@ public class Teacher extends User {
             String noGrade = "--";
             try (Connection conn = PowerSchool.getConnection()) {
                 PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignment_grades WHERE student_id = ? AND course_id = ? AND assignment_id = ?");
-                stmt.setInt(1, studentsInCourse.get(studentSelection).getStudentId());
+                stmt.setInt(1, studentsInCourse.get(studentSelection - 1).getStudentId());
                 stmt.setInt(2, course_id);
-                stmt.setInt(3, assignmentIds.get(assignmentSelection));
+                stmt.setInt(3, assignmentIds.get(assignmentSelection - 1));
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
+                        System.out.println(rs.getInt("points_earned"));
                         currentGrades.add(rs.getInt("points_earned"));
                     }
                 }
@@ -514,11 +537,64 @@ public class Teacher extends User {
                 System.out.println(e);
             }
 
-            System.out.printf("Assignment: %s (%d pts)\n", assignments.get(assignmentSelection), assignmentPoints.get(assignmentSelection));
-            System.out.printf("Student: %s, %s\n", studentsInCourse.get(studentSelection).getLastName(), studentsInCourse.get(studentSelection).getFirstName());
+
+            System.out.printf("\nAssignment: %s (%d pts)\n", assignments.get(assignmentSelection - 1), assignmentPoints.get(assignmentSelection - 1));
+            System.out.printf("Student: %s, %s\n", studentsInCourse.get(studentSelection - 1).getLastName(), studentsInCourse.get(studentSelection - 1).getFirstName());
             System.out.printf("Current Grade: %s\n", (currentGrades.size() == 0) ? noGrade : Integer.toString(currentGrades.get(0)));
+
+            System.out.print("\nNew Grade: ");
             
-            System.out.println("New Grade: ");
+            int newGrade = -1;
+            while (newGrade < 0 || newGrade > assignmentPoints.get(assignmentSelection - 1)) {
+                try {
+                    newGrade = in.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("\nYour input was invalid. Please try again.");
+                    System.out.print("\nNew Grade: ");
+                }finally {
+                    in.nextLine();
+                }
+                if (newGrade < 0 || newGrade > assignmentPoints.get(assignmentSelection - 1)) {
+                    System.out.printf("Must be between 0 and %d. Try again: ", assignmentPoints.get(assignmentSelection - 1));
+                }
+            }
+
+            boolean intent = Utils.confirm(in, "\nAre you sure you want to enter this grade? (y/n) ");
+
+            if (intent) {
+                if (currentGrades.size() == 0) {
+                    try (Connection conn = PowerSchool.getConnection()) {
+                        PreparedStatement stmt = conn.prepareStatement("INSERT INTO assignment_grades (course_id, assignment_id, student_id, points_earned, points_possible, is_graded) VALUES (?, ?, ?, ?, ?, ?)");
+                        stmt.setInt(1, course_id);
+                        stmt.setInt(2, assignmentIds.get(assignmentSelection - 1));
+                        stmt.setInt(3, studentsInCourse.get(studentSelection - 1).getStudentId());
+                        stmt.setInt(4, newGrade);
+                        stmt.setInt(5, assignmentPoints.get(assignmentSelection - 1));
+                        stmt.setInt(6, 1);
+                        stmt.executeUpdate();
+                    } catch (SQLException e) {
+                        System.out.println(e);
+                    }
+                }else if (currentGrades.size() != 0) {
+                    try (Connection conn = PowerSchool.getConnection()) {
+                        PreparedStatement stmt = conn.prepareStatement("UPDATE assignment_grades SET points_earned = ? WHERE student_id = ? AND course_id = ? AND assignment_id = ?");
+                        stmt.setInt(1, newGrade);
+                        stmt.setInt(2, studentsInCourse.get(studentSelection - 1).getStudentId());
+                        stmt.setInt(3, course_id);
+                        stmt.setInt(4, assignmentIds.get(assignmentSelection - 1));
+
+                        stmt.executeUpdate();
+                    } catch (SQLException e) {
+                        System.out.println(e);
+                    }
+                }
+                
+            }else {
+                return;
+            }
+
+
+
         } else {
             System.out.println("\nNo assignments to show.");
         }

@@ -23,7 +23,7 @@ public class Application {
         this.in = new Scanner(System.in);
 
         try {
-            PowerSchool.initialize(true);
+            PowerSchool.initialize(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
