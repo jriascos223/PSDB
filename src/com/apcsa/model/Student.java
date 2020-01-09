@@ -131,6 +131,7 @@ public class Student extends User {
 					course_nos.add(rs.getString("course_no"));
 					course_ids.add(rs.getString("course_id"));
 				}
+				System.out.print("\n::: ");
 			} catch (SQLException e) {
 				System.out.println(e);
 			}
@@ -152,6 +153,7 @@ public class Student extends User {
 		System.out.println("[4] MP4 Assignment.");
 		System.out.println("[5] Midterm Exam.");
 		System.out.println("[6] Final Exam.");
+		System.out.print("\n::: ");
 
 
 		try {
@@ -192,14 +194,13 @@ public class Student extends User {
 				System.out.print("\n");
 				int assignmentCount = 1;
 				while (rs.next()) {
-					System.out.printf("%d. %s / %d (out of %d pts)", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
+					System.out.printf("%d. %s / %d (out of %d pts)\n", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
 					assignmentCount++;
 				}
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
 		}
-		System.out.print("\n");
 	}
 
 }
