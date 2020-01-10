@@ -172,6 +172,10 @@ public class Teacher extends User {
         deleteAssignmentHelper(in, mp, course_nos.get(courseInput - 1));
      }
 
+     /**
+      * Method that enters a grade for a student.
+      * @param in the Scanner
+      */
      public void enterGrade(Scanner in) {
         int courseInput = 0;
         ArrayList<String> course_nos = getTeacherCourseList();
@@ -274,6 +278,13 @@ public class Teacher extends User {
         return output;
     }
 
+    /**
+     * Helper function to the add assignment method, pretty much everything is done here. Prompts for assignment details and adds a new assignment with them.
+     * @param in the Scanner
+     * @param mp number representing marking period (5 and 6 are midterm and final respectively)
+     * @param title course_no of the course selected.
+     * @throws SQLException SQL error
+     */
     private void addAssignmentHelper(Scanner in, int mp, String title) throws SQLException {
         int isFinal = (mp == 6) ? 1 : 0;
         int isMidterm = (mp == 5) ? 1 : 0;
@@ -329,22 +340,14 @@ public class Teacher extends User {
         }        
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Helper function to the delete assignment method, pretty much everything is done here. Prompts for assignment selection and deletes it from the assignments table.
+     * @param in the Scanner
+     * @param mp number representing marking period (5 and 6 are midterm and final respectively)
+     * @param title
+     */
     private void deleteAssignmentHelper(Scanner in, int mp, String title) {
+        
 
         //get course id from title
         int course_id = this.getCourseIdFromTitle(title);
@@ -400,6 +403,8 @@ public class Teacher extends User {
         ArrayList<Assignment> assignments = new ArrayList<Assignment>();
         String statement = !(mp > 4) ? "SELECT * FROM assignments WHERE course_id = ? AND marking_period = ?" 
         : (mp == 5) ? "SELECT * FROM assignments WHERE course_id = ? AND is_midterm = 1" : "SELECT * FROM assignments WHERE course_id = ? AND is_final = 1";
+
+
 
         assignments = this.getAssignmentList(statement, course_id, mp);
 
@@ -467,6 +472,9 @@ public class Teacher extends User {
                         System.out.println(e);
                     }
                 }
+
+                //update student's mp grade
+                //studentsInCourse.get(studentSelection - 1).updateMPGrade(course_id);
             }else {
                 return;
             }
@@ -475,6 +483,11 @@ public class Teacher extends User {
         }
     }
 
+    /**
+     * Obtain the course_id from the course_no of the course.
+     * @param title the course_no that is being used to find the course_id
+     * @return returns the course_id or -1 if nothing with that course_no was found
+     */
     private int getCourseIdFromTitle(String title) {
         try (Connection conn = PowerSchool.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement("SELECT course_id FROM courses WHERE course_no = ?");
@@ -496,14 +509,16 @@ public class Teacher extends User {
      * Returns an ArrayList of assignment objects that can be used to access different information about each assignment.
      * @param statement The SQL statement used in order to get the ResultSet (to be removed)
      * @param course_id The course_id of the course in question.
-     * @param mp The marking period number in question.
+     * @param mp number representing marking period (5 and 6 are midterm and final respectively)
      * @return An ArrayList of Assignment objects.
      */
     private ArrayList<Assignment> getAssignmentList(String statement, int course_id, int mp) {
         ArrayList<Assignment> assignments = new ArrayList<Assignment>();
+        if (mp > 0 && mp < 5) {
         try (Connection conn = PowerSchool.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(statement);
             stmt.setInt(1, course_id);
+            stmt.setInt(2, mp);
             if (mp > 0 && mp < 5) {
                 stmt.setInt(2, mp);
             }
@@ -516,6 +531,11 @@ public class Teacher extends User {
         } catch (SQLException e) {
             System.out.println(e);
         }
+            
+        }else {
+            //marking period is either midterm or final
+        }
+        
 
         return assignments;
     }
@@ -524,7 +544,7 @@ public class Teacher extends User {
      * Displays assignments and returns an integer which represents the teacher's selection of assignment. 
      * @param in the Scanner
      * @param assignments the ArrayList of Assignments
-     * @return
+     * @return the index of the selected assignment
      */
     private int getAssignmentSelection(Scanner in, ArrayList<Assignment> assignments) {
         int assignmentSelection = -1;
@@ -552,9 +572,14 @@ public class Teacher extends User {
                 }
                 
             }
-        return  assignmentSelection;
+        return assignmentSelection;
     }
 
+    /**
+     * Returns an ArrayList of the students in a course.
+     * @param course_id the course_id of the course in question
+     * @return an ArrayList of students
+     */
     private ArrayList<Student> getStudentsInCourse(int course_id) {
         ArrayList<Student> studentsInCourse = new ArrayList<Student>();
         try (Connection conn  = PowerSchool.getConnection()) {
@@ -573,6 +598,12 @@ public class Teacher extends User {
         return studentsInCourse;
     }
 
+    /**
+     * Prompts the user for a student and returns the selected student in a course.
+     * @param in the Scanner
+     * @param studentsInCourse an ArrayList of the student list in the course
+     * @return index of the selected student
+     */
     private int getStudentInCourseSelection(Scanner in, ArrayList<Student> studentsInCourse) {
         System.out.print("\n");
         for (int i = 0; i < studentsInCourse.size(); i++) {
@@ -602,13 +633,12 @@ public class Teacher extends User {
 
     /**
      * Method which takes the student_id, course_id, and assignment_id in order to obtain the student's current grade in the course (if there exists one).
-     * @param output 
-     * @param studentsInCourse
-     * @param studentSelection
-     * @param assignments
-     * @param assignmentSelection
-     * @param course_id
-     * @return
+     * @param studentsInCourse ArrayList of students in a course
+     * @param studentSelection user's selection of the student they were referring to (index)
+     * @param assignments ArrayList of assignments in course
+     * @param assignmentSelection user's selection of the assignment they were referring to (index)
+     * @param course_id id of course
+     * @return integetr representing the current student's grade on the assignment
      */
     private int getCurrentGradeOfStudentInCourse(ArrayList<Student> studentsInCourse, int studentSelection, ArrayList<Assignment> assignments, int assignmentSelection, int course_id) {
             int output = -1;

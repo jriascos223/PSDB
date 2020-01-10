@@ -203,4 +203,8 @@ public class Student extends User {
 		}
 	}
 
+	public void updateMPGrade(int course_id, int mp) {
+
+	}
+
 }
