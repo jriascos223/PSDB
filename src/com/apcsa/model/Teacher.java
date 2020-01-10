@@ -286,11 +286,29 @@ public class Teacher extends User {
      * @throws SQLException SQL error
      */
     private void addAssignmentHelper(Scanner in, int mp, String title) throws SQLException {
+        boolean finalExists = false;
+        boolean midtermExists = false;
         int isFinal = (mp == 6) ? 1 : 0;
         int isMidterm = (mp == 5) ? 1 : 0;
         int markingPeriod = (mp > 4) ? 0 : mp;
         String assignmentTitle = "";
         int pointValue = -1;
+
+        int course_id = this.getCourseIdFromTitle(title);
+
+        if (mp == 5) {
+            midtermExists = this.checkIfMidtermOrFinalExists("midterm", course_id);
+        }else if (mp == 6) {
+            finalExists = this.checkIfMidtermOrFinalExists("final", course_id);
+        }
+        
+        if (midtermExists && mp == 5) {
+            System.out.println("\nA midterm already exists!");
+            return;
+        }else if (finalExists && mp == 6) {
+            System.out.println("\nA final already exists!");
+            return;
+        }
 
         System.out.print("\nAssignment Title: ");
         try {
@@ -317,8 +335,7 @@ public class Teacher extends User {
         boolean intent = Utils.confirm(in, "\nAre you sure you want to create this assignment? (y/n) ");
 
         if (intent) {
-            //get course id from title
-            int course_id = this.getCourseIdFromTitle(title);
+            
 
             //next follows generating an assignment id
             int assignment_id = Utils.generateAssignmentId();
@@ -416,6 +433,11 @@ public class Teacher extends User {
 
             //gets the students in the course
             ArrayList<Student> studentsInCourse = this.getStudentsInCourse(course_id);
+
+            if (studentsInCourse.size() == 0) {
+                System.out.println("\nThere are no students to grade, try selecting another course.");
+                return;
+            }
             
             int studentSelection = this.getStudentInCourseSelection(in, studentsInCourse);
             
@@ -474,7 +496,7 @@ public class Teacher extends User {
                 }
 
                 //update student's mp grade
-                //studentsInCourse.get(studentSelection - 1).updateMPGrade(course_id);
+                studentsInCourse.get(studentSelection - 1).updateMPGrade(course_id, mp);
             }else {
                 return;
             }
@@ -519,9 +541,6 @@ public class Teacher extends User {
             PreparedStatement stmt = conn.prepareStatement(statement);
             stmt.setInt(1, course_id);
             stmt.setInt(2, mp);
-            if (mp > 0 && mp < 5) {
-                stmt.setInt(2, mp);
-            }
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     assignments.add(new Assignment(rs.getString("title"), rs.getInt("assignment_id"), rs.getInt("point_value")));
@@ -534,6 +553,18 @@ public class Teacher extends User {
             
         }else {
             //marking period is either midterm or final
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement(statement);
+                stmt.setInt(1, course_id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        assignments.add(new Assignment(rs.getString("title"), rs.getInt("assignment_id"), rs.getInt("point_value")));
+                    }
+                }
+    
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
         }
         
 
@@ -658,6 +689,48 @@ public class Teacher extends User {
                 System.out.println(e);
             }
         return output;
+    }
+
+    /**
+     * Doesn't make sense to have more than one midterm or final right? This method checks if that's the case and prevents its creation if it already exists.
+     * @param selection selection of either midterm or final to be checked for
+     */
+    private boolean checkIfMidtermOrFinalExists(String selection, int course_id) {
+        if (selection.equals("midterm")) {
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignments WHERE is_midterm = 1 AND course_id = ?");
+                stmt.setInt(1, course_id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }catch (SQLException e) {
+                    System.out.println(e);
+                }
+            }catch (SQLException e) {
+                System.out.println(e);
+            }
+        }else if (selection.equals("final")) {
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignments WHERE is_final = 1 AND course_id = ?");
+                stmt.setInt(1, course_id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }else {
+                        return false;
+                    }
+                }catch (SQLException e) {
+                    System.out.println(e);
+                }
+            }catch (SQLException e) {
+                System.out.println(e);
+            }
+        }
+
+        return false;
     }
 }
 

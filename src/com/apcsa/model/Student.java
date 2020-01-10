@@ -204,6 +204,68 @@ public class Student extends User {
 	}
 
 	public void updateMPGrade(int course_id, int mp) {
+		int pointsEarned = 0;
+		int pointsPossible = 0;
+		int grade = 0;
+		String columnLabel = "mp" + Integer.toString(mp);
+		if (mp < 5 && mp > 0) {
+			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND marking_period = ?";
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				stmt.setInt(1, this.getStudentId());
+				stmt.setInt(2, course_id);
+				stmt.setInt(3, mp);
+				try (ResultSet rs = stmt.executeQuery()) {
+					while (rs.next()) {
+						pointsEarned += rs.getInt("points_earned");
+						pointsPossible += rs.getInt("points_possible");
+					}
+				}
+			}
+
+			grade = Math.round((pointsEarned / pointsPossible) * 100);
+
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET ? = ? WHERE course_id = ? AND student_id = ?");
+				stmt.setString(1, columnLabel);
+				stmt.setInt(2, grade);
+				stmt.setInt(3, course_id);
+				stmt.setInt(4, this.studentId);
+				stmt.executeUpdate();
+			}
+		}else if (mp == 5) {
+			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_midterm = 1";
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						pointsEarned = rs.getInt("points_earned");
+						pointsPossible = rs.getInt("points_possible");
+					}
+				}
+			}catch (SQLException e) {
+
+			}
+
+			grade = Math.round((pointsEarned / pointsPossible) * 100);
+		}else if (mp == 6) {
+			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_final = 1";
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement(statement);
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						pointsEarned = rs.getInt("points_earned");
+						pointsPossible = rs.getInt("points_possible");
+					}
+				}
+			}catch (SQLException e) {
+
+			}
+
+			grade = Math.round((pointsEarned / pointsPossible) * 100);
+
+
+		}
 
 	}
 
