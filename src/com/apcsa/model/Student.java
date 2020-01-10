@@ -68,6 +68,14 @@ public class Student extends User {
 	public int getStudentId() {
 		return this.studentId;
 	}
+
+	public double getGpa() {
+		return this.gpa;
+	}
+
+	public void setClassRank(int classRank) {
+		this.classRank = classRank;
+	}
     
     
     /**
