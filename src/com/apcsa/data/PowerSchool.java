@@ -5,20 +5,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
-import com.apcsa.controller.Utils;
-import com.apcsa.model.Administrator;
-import com.apcsa.model.Student;
-import com.apcsa.model.Teacher;
-import com.apcsa.model.User;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+import com.apcsa.controller.*;
+import com.apcsa.model.*;
 
 public class PowerSchool {
 
@@ -50,7 +44,7 @@ public class PowerSchool {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                shutdown(true);
             }
 
             // build database if needed
@@ -88,7 +82,7 @@ public class PowerSchool {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            shutdown(true);
         }
 
         return null;
@@ -113,7 +107,7 @@ public class PowerSchool {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            shutdown(true);
         }
 
         return user;
@@ -138,7 +132,7 @@ public class PowerSchool {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            shutdown(true);
         }
 
         return user;
@@ -163,7 +157,7 @@ public class PowerSchool {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            shutdown(true);
         }
 
         return user;
@@ -183,7 +177,7 @@ public class PowerSchool {
                 }
             }
          } catch (SQLException e) {
-             System.out.println(e);
+             shutdown(true);
          }
 
          return faculty;
@@ -202,7 +196,7 @@ public class PowerSchool {
                 }
             }
          } catch (SQLException e) {
-             System.out.println(e);
+             shutdown(true);
          }
 
          return students;
@@ -247,7 +241,7 @@ public class PowerSchool {
                 return -1;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            shutdown(true);
 
             return -1;
         }
@@ -276,7 +270,7 @@ public class PowerSchool {
         		return -1;
         	}
         } catch (SQLException e) {
-			e.printStackTrace();
+			shutdown(true);
 			return -1;
 		}
     }
@@ -309,17 +303,66 @@ public class PowerSchool {
             }
         } catch (FileNotFoundException e) {
             System.err.println("Error: Unable to load SQL configuration file.");
-            e.printStackTrace();
+            shutdown(true);
         } catch (IOException e) {
             System.err.println("Error: Unable to open and/or read SQL configuration file.");
-            e.printStackTrace();
+            shutdown(true);
         } catch (SQLException e) {
             System.err.println("Error: Unable to execute SQL script from configuration file.");
-            e.printStackTrace();
+            shutdown(true);
         }
     }
 
     public static boolean isResultSetEmpty(ResultSet resultSet) throws SQLException {
         return !resultSet.first();
     }
+
+
+	public static void resetPassword(Scanner in) {
+        System.out.print("\nUsername: ");
+        String username = "";
+        try {
+            username = in.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input for username, please try again.");
+            resetPassword(in);
+        }
+        String password = Utils.getHash(username);
+
+        try (Connection conn = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE users SET auth = ? WHERE username = ?");
+            stmt.setString(1, password);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        }catch (SQLException e){
+            shutdown(true);
+        }
+
+        System.out.println("\nReset password.");
+        PowerSchool.resetTimestamp(username);
+
+	}
+
+
+	private static void resetTimestamp(String username) {
+        
+        try (Connection conn = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE users SET last_login = '1111-11-11 11:11:11.111' WHERE username = ?");
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        }catch (SQLException e){
+            shutdown(true);
+        }
+
+    }
+
+	public static void shutdown(boolean error) {
+        if (error) {
+            System.out.println("\nA fatal error has occurred. Shutting down...");
+            Application.running = false;
+            return;
+        }
+        System.out.println("\nShutting down...");
+        Application.running = false;
+	}
 }

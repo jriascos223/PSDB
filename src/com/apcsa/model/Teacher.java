@@ -117,7 +117,7 @@ public class Teacher extends User {
                 }
              }
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
         
         
@@ -145,7 +145,7 @@ public class Teacher extends User {
         try {
             addAssignmentHelper(in, mp, course_nos.get(courseInput - 1));
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
 
      }
@@ -211,7 +211,7 @@ public class Teacher extends User {
         		Connection conn = PowerSchool.getConnection();
         		PowerSchool.updatePassword(conn, this.getUsername(), password);
         	} catch (SQLException e){
-        		System.out.println(e);
+        		PowerSchool.shutdown(true);
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");
@@ -239,10 +239,10 @@ public class Teacher extends User {
 					course_nos.add(rs.getString("course_no"));
 				}
 			} catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
         }
         System.out.print("\n::: ");
 
@@ -352,7 +352,7 @@ public class Teacher extends User {
 
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         }        
     }
@@ -387,7 +387,7 @@ public class Teacher extends User {
                 stmt.setInt(2, assignments.get(assignmentSelection - 1).getAssignmentId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
 
             try (Connection conn = PowerSchool.getConnection()) {
@@ -396,7 +396,7 @@ public class Teacher extends User {
                 stmt.setInt(2, assignments.get(assignmentSelection - 1).getAssignmentId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
 
             System.out.printf("\nSuccessfully deleted %s.\n", assignments.get(assignmentSelection - 1).getTitle());
@@ -480,7 +480,7 @@ public class Teacher extends User {
                         stmt.setInt(6, 1);
                         stmt.executeUpdate();
                     } catch (SQLException e) {
-                        System.out.println(e);
+                        PowerSchool.shutdown(true);
                     }
                 }else if (currentGrade != -1) {
                     try (Connection conn = PowerSchool.getConnection()) {
@@ -491,7 +491,7 @@ public class Teacher extends User {
                         stmt.setInt(4, assignments.get(assignmentSelection - 1).getAssignmentId());
                         stmt.executeUpdate();
                     } catch (SQLException e) {
-                        System.out.println(e);
+                        PowerSchool.shutdown(true);
                     }
                 }
 
@@ -519,10 +519,10 @@ public class Teacher extends User {
                     return rs.getInt("course_id");
                 }
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
         return -1;
     }
@@ -548,7 +548,7 @@ public class Teacher extends User {
             }
 
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
             
         }else {
@@ -563,7 +563,7 @@ public class Teacher extends User {
                 }
     
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         }
         
@@ -624,7 +624,7 @@ public class Teacher extends User {
             
             
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
         return studentsInCourse;
     }
@@ -686,7 +686,7 @@ public class Teacher extends User {
                     }
                 }
             } catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         return output;
     }
@@ -707,10 +707,10 @@ public class Teacher extends User {
                         return false;
                     }
                 }catch (SQLException e) {
-                    System.out.println(e);
+                    PowerSchool.shutdown(true);
                 }
             }catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         }else if (selection.equals("final")) {
             try (Connection conn = PowerSchool.getConnection()) {
@@ -723,10 +723,10 @@ public class Teacher extends User {
                         return false;
                     }
                 }catch (SQLException e) {
-                    System.out.println(e);
+                    PowerSchool.shutdown(true);
                 }
             }catch (SQLException e) {
-                System.out.println(e);
+                PowerSchool.shutdown(true);
             }
         }
 

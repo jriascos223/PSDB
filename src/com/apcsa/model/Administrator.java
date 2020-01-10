@@ -72,11 +72,11 @@ public class Administrator extends User {
 					departmentCount++;
 				}
 			} catch (SQLException e){
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 			
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 		
 		do {
@@ -146,7 +146,7 @@ public class Administrator extends User {
 		try {
 			selection = in.nextLine();
 		} catch (InputMismatchException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 
 
@@ -160,7 +160,7 @@ public class Administrator extends User {
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 		
 	}
@@ -178,7 +178,7 @@ public class Administrator extends User {
         		Connection conn = PowerSchool.getConnection();
         		PowerSchool.updatePassword(conn, this.getUsername(), password);
         	} catch (SQLException e){
-        		System.out.println(e);
+        		PowerSchool.shutdown(true);
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");

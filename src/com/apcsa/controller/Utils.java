@@ -94,7 +94,7 @@ public class Utils {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            PowerSchool.shutdown(true);
         }
 
         if (ids.size() == 0) {

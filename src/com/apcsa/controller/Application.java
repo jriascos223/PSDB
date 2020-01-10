@@ -14,6 +14,8 @@ public class Application {
 	enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
 	enum TeacherAction { ENROLLMENT, AASSIGNMENT, DASSIGNMENT, ENTERGRADE, PASSWORD, LOGOUT}
 
+	public static boolean running = true;
+
     /**
      * Creates an instance of the Application class, which is responsible for interacting
      * with the user via the command line interface.
@@ -35,11 +37,11 @@ public class Application {
 
     public void startup() {
         System.out.println("PowerSchool -- now for students, teachers, and school administrators!");
-        boolean login = false;
+		boolean login = false;
 
         // continuously prompt for login credentials and attempt to login
 
-        while (true) {
+        while (running) {
             System.out.print("\nUsername: ");
             String username = in.next();
 
@@ -153,10 +155,22 @@ public class Application {
     				return true;
     			case LOGOUT:
     				return false;
-    				
     		}
     	}else if (user.isRoot()) {
-    		
+    		switch(getRootSelection()) {
+				case PASSWORD:
+					PowerSchool.resetPassword(in);
+					return true;
+				case DATABASE:
+					PowerSchool.initialize(true);
+					System.out.println("Database reset.");
+					return true;
+				case LOGOUT:
+					return false;
+				case SHUTDOWN:
+					PowerSchool.shutdown(false);
+					return false;
+			}
     	}
     	
     	return true;
@@ -281,6 +295,36 @@ public class Application {
 
 	}
 
+	public RootAction getRootSelection() {
+		int output = -1;
+		do {
+			System.out.println("\n[1] Reset user password.");
+			System.out.println("[2] Factory reset database.");
+			System.out.println("[3] Logout.");
+			System.out.println("[4] Shutdown.");
+			System.out.print("\n::: ");
+			try {
+                output = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nYour input was invalid. Please try again.\n");
+			}
+            in.nextLine();
+		} while (output > 6 || output < 1);
+
+		switch(output) {
+			case 1:
+				return RootAction.PASSWORD;
+			case 2:
+				return RootAction.DATABASE;
+			case 3:
+				return RootAction.LOGOUT;
+			case 4:
+				return RootAction.SHUTDOWN;
+			default:
+				return null;
+		}
+	}
+
     /**
      * Logs in with the provided credentials.
      *
@@ -302,7 +346,7 @@ public class Application {
      */
 
     public boolean isFirstLogin() {
-        return activeUser.getLastLogin().equals("0000-00-00 00:00:00.000");
+        return (activeUser.getLastLogin().equals("0000-00-00 00:00:00.000") || activeUser.getLastLogin().equals("1111-11-11 11:11:11.111"));
     }
 
     /////// MAIN METHOD ///////////////////////////////////////////////////////////////////

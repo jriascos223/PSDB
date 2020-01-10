@@ -88,7 +88,7 @@ public class Student extends User {
         		Connection conn = PowerSchool.getConnection();
         		PowerSchool.updatePassword(conn, this.getUsername(), password);
         	} catch (SQLException e){
-        		System.out.println(e);
+        		PowerSchool.shutdown(true);
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");
@@ -107,7 +107,7 @@ public class Student extends User {
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 	}
 
@@ -133,10 +133,10 @@ public class Student extends User {
 				}
 				System.out.print("\n::: ");
 			} catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 
 		try {
@@ -159,7 +159,7 @@ public class Student extends User {
 		try {
 			selection = in.nextInt();
 		} catch (InputMismatchException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		} finally {
 			in.nextLine();
 		}
@@ -199,7 +199,7 @@ public class Student extends User {
 				}
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 	}
 
@@ -222,7 +222,7 @@ public class Student extends User {
 					}
 				}
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
@@ -235,7 +235,7 @@ public class Student extends User {
 				stmt.setInt(3, this.studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 		}else if (mp == 5) {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_midterm = 1";
@@ -250,7 +250,7 @@ public class Student extends User {
 					}
 				}
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
@@ -261,7 +261,7 @@ public class Student extends User {
 				stmt.setInt(3, this.studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 		}else if (mp == 6) {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_final = 1";
@@ -276,7 +276,7 @@ public class Student extends User {
 					}
 				}
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
@@ -287,7 +287,7 @@ public class Student extends User {
 				stmt.setInt(3, this.studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
-				System.out.println(e);
+				PowerSchool.shutdown(true);
 			}
 		}
 
@@ -311,7 +311,7 @@ public class Student extends User {
 				}
 			}
 		}catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 
 		int course_grade = (int) Math.round(Utils.getGrade(grades));
@@ -323,7 +323,7 @@ public class Student extends User {
 			stmt.setInt(3, this.studentId);
 			stmt.executeUpdate();
 		}catch (SQLException e) {
-			System.out.println(e);
+			PowerSchool.shutdown(true);
 		}
 
 
