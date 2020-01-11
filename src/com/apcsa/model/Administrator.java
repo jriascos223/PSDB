@@ -112,6 +112,7 @@ public class Administrator extends User {
 		System.out.println("[2] Sophomore.");
 		System.out.println("[3] Junior.");
 		System.out.println("[4] Senior.");
+		System.out.print("\n:::");
 		int selection = 0;
 
 		do {
@@ -126,6 +127,7 @@ public class Administrator extends User {
 
 		selection += 8;
 
+		System.out.print("\n");
 
 		ArrayList<Student> students = new ArrayList<Student>();
 		students = PowerSchool.getStudents();
@@ -133,7 +135,7 @@ public class Administrator extends User {
 
 		for (int i = 0; i < students.size(); i++) {
 			if (students.get(i).getGradeLevel() == selection) {
-				System.out.println(students.get(i).getLastName() + ", " + students.get(i).getFirstName() + " / " + students.get(i).getGraduation());
+				System.out.println(students.get(i).getLastName() + ", " + students.get(i).getFirstName() + " / " + students.get(i).getClassRank());
 			}
 		}
 
@@ -151,13 +153,12 @@ public class Administrator extends User {
 		}
 
 
-
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_NO);
 			stmt.setString(1, selection);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
-					System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getInt("graduation"));
+					System.out.println(rs.getString("last_name") + ", " + rs.getString("first_name") + " / " + rs.getDouble("gpa"));
 				}
 			}
 		} catch (SQLException e) {

@@ -224,7 +224,11 @@ public class Utils {
 		ArrayList<String> course_nos = new ArrayList<String>();
 		ArrayList<String> course_ids = new ArrayList<String>();
 		ArrayList<Double> credit_hours = new ArrayList<Double>();
-		ArrayList<Double> courseGrades = student.getCourseGrades();
+        ArrayList<Double> courseGrades = student.getCourseGrades();
+
+        if (courseGrades.contains(0)) {
+            return;
+        }
 		
 		int count = 1;
 		
@@ -284,7 +288,7 @@ public class Utils {
             PowerSchool.updateGPA(roundedGpa, student.getStudentId());
             
 
-		
+            updateRanks(PowerSchool.getStudents());
 	}
 
 }

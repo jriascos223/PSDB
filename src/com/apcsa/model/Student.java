@@ -76,6 +76,10 @@ public class Student extends User {
 	public void setClassRank(int classRank) {
 		this.classRank = classRank;
 	}
+
+	public int getClassRank() {
+		return this.classRank;
+	}
     
     
     /**
@@ -216,7 +220,6 @@ public class Student extends User {
 			stmt.setInt(1, studentId);
 			stmt.setString(2, course_ids.get(input - 1));
 			try (ResultSet rs = stmt.executeQuery()) {
-				System.out.print("\n");
 				int assignmentCount = 1;
 				while (rs.next()) {
 					if (rs.getInt("points_possible") == 0) {
@@ -327,7 +330,8 @@ public class Student extends User {
 	}
 
 	private void updateGradeInCourse(int course_id){
-		Double[] grades = new Double[6]; 
+		Double[] grades = new Double[6];
+
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM course_grades WHERE student_id = ? AND course_id = ?");
 			stmt.setInt(1, studentId);
