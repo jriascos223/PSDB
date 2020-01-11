@@ -364,5 +364,19 @@ public class PowerSchool {
         }
         System.out.println("\nShutting down...");
         Application.running = false;
-	}
+    }
+    
+    public static void updateGPA(double gpa, int studentId) {
+        System.out.println("SHOULD UPDATE GPA");
+        try (Connection conn = getConnection();) {
+        	PreparedStatement stmt = conn.prepareStatement("UPDATE students SET gpa = ? WHERE student_id = ?"); 
+
+            stmt.setDouble(1, gpa);
+            stmt.setInt(2, studentId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            shutdown(true);
+        }
+    }
 }
