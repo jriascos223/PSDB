@@ -104,11 +104,28 @@ public class Student extends User {
 		
 	}
 
+	public ArrayList<Integer> getCourseGrades() {
+		ArrayList<Integer> course_grades = new ArrayList<Integer>();
+		try (Connection conn = PowerSchool.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
+			stmt.setInt(1, studentId);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					course_grades.add(rs.getInt("grade"));
+				}
+			}
+		} catch (SQLException e) {
+			PowerSchool.shutdown(true);
+		}
+
+		return course_grades;
+	}
+
 	public void viewCourseGrades() {
 		System.out.print("\n");
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
-			stmt.setInt(1, this.getStudentId());
+			stmt.setInt(1, studentId);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					System.out.println(rs.getString("title") + " / " + rs.getInt("grade"));
@@ -130,8 +147,8 @@ public class Student extends User {
 		String selectionString = "";
 		
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
-			stmt.setInt(1, this.getStudentId());
+			PreparedStatement stmt = conn.prepareStatement("SELECT courses.title, grade, courses.course_id, courses.course_no FROM course_grades INNER JOIN courses ON course_grades.course_id = courses.course_id INNER JOIN students ON students.student_id = course_grades.student_id WHERE students.student_id = ?");
+			stmt.setInt(1, studentId);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					System.out.println("[" + count + "] " + rs.getString("course_no"));
@@ -195,15 +212,21 @@ public class Student extends User {
 
 
 		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignment_grades INNER JOIN assignments ON assignment_grades.assignment_id = assignments.assignment_id WHERE student_id = ? AND assignment_grades.course_id = ?");
-			stmt.setInt(1, this.getStudentId());
+			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assignments LEFT JOIN assignment_grades ON assignments.assignment_id = assignment_grades.assignment_id WHERE (student_id IS NULL OR student_id = ?) AND assignments.course_id = ?");
+			stmt.setInt(1, studentId);
 			stmt.setString(2, course_ids.get(input - 1));
 			try (ResultSet rs = stmt.executeQuery()) {
 				System.out.print("\n");
 				int assignmentCount = 1;
 				while (rs.next()) {
-					System.out.printf("%d. %s / %d (out of %d pts)\n", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
-					assignmentCount++;
+					if (rs.getInt("points_possible") == 0) {
+						System.out.printf("%d. %s / UNGRADED\n", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
+						assignmentCount++;
+					}else {
+						System.out.printf("%d. %s / %d (out of %d pts)\n", assignmentCount, rs.getString("title"), rs.getInt("points_earned"), rs.getInt("points_possible"));
+						assignmentCount++;
+					}
+					
 				}
 			}
 		} catch (SQLException e) {
@@ -220,7 +243,7 @@ public class Student extends User {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND marking_period = ?";
 			try (Connection conn = PowerSchool.getConnection()) {
 				PreparedStatement stmt = conn.prepareStatement(statement);
-				stmt.setInt(1, this.getStudentId());
+				stmt.setInt(1, studentId);
 				stmt.setInt(2, course_id);
 				stmt.setInt(3, mp);
 				try (ResultSet rs = stmt.executeQuery()) {
@@ -240,7 +263,7 @@ public class Student extends User {
 				PreparedStatement stmt = conn.prepareStatement(updateStatement);
 				stmt.setInt(1, grade);
 				stmt.setInt(2, course_id);
-				stmt.setInt(3, this.studentId);
+				stmt.setInt(3, studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
 				PowerSchool.shutdown(true);
@@ -249,7 +272,7 @@ public class Student extends User {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_midterm = 1";
 			try (Connection conn = PowerSchool.getConnection()) {
 				PreparedStatement stmt = conn.prepareStatement(statement);
-				stmt.setInt(1, this.studentId);
+				stmt.setInt(1, studentId);
 				stmt.setInt(2, course_id);
 				try (ResultSet rs = stmt.executeQuery()) {
 					if (rs.next()) {
@@ -266,7 +289,7 @@ public class Student extends User {
 				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET midterm_exam = ? WHERE course_id = ? AND student_id = ?");
 				stmt.setInt(1, grade);
 				stmt.setInt(2, course_id);
-				stmt.setInt(3, this.studentId);
+				stmt.setInt(3, studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
 				PowerSchool.shutdown(true);
@@ -275,7 +298,7 @@ public class Student extends User {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_final = 1";
 			try (Connection conn = PowerSchool.getConnection()) {
 				PreparedStatement stmt = conn.prepareStatement(statement);
-				stmt.setInt(1, this.studentId);
+				stmt.setInt(1, studentId);
 				stmt.setInt(2, course_id);
 				try (ResultSet rs = stmt.executeQuery()) {
 					if (rs.next()) {
@@ -292,7 +315,7 @@ public class Student extends User {
 				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET midterm_exam = ? WHERE course_id = ? AND student_id = ?");
 				stmt.setInt(1, grade);
 				stmt.setInt(2, course_id);
-				stmt.setInt(3, this.studentId);
+				stmt.setInt(3, studentId);
 				stmt.executeUpdate();
 			}catch (SQLException e) {
 				PowerSchool.shutdown(true);
@@ -306,7 +329,7 @@ public class Student extends User {
 		Double[] grades = new Double[6]; 
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM course_grades WHERE student_id = ? AND course_id = ?");
-			stmt.setInt(1, this.studentId);
+			stmt.setInt(1, studentId);
 			stmt.setInt(2, course_id);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
@@ -328,7 +351,7 @@ public class Student extends User {
 			PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET grade = ? WHERE course_id = ? AND student_id = ?");
 			stmt.setInt(1, course_grade);
 			stmt.setInt(2, course_id);
-			stmt.setInt(3, this.studentId);
+			stmt.setInt(3, studentId);
 			stmt.executeUpdate();
 		}catch (SQLException e) {
 			PowerSchool.shutdown(true);
@@ -336,5 +359,7 @@ public class Student extends User {
 
 
 	}
+
+	
 
 }

@@ -217,4 +217,36 @@ public class Utils {
                 
         return students;
     }
+
+    private static void updateGPA() {
+		// //I SWEAR if I have time I WILL make a course class
+		// ArrayList<String> course_nos = new ArrayList<String>();
+		// ArrayList<String> course_ids = new ArrayList<String>();
+		// ArrayList<double> credit_hours = new ArrayList<double>();
+		// ArrayList<Integer> course_grades = this.getCourseGrades();
+		
+		// int count = 1;
+		
+		// try (Connection conn = PowerSchool.getConnection()) {
+		// 	PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_COURSES);
+		// 	stmt.setInt(1, studentId);
+		// 	try (ResultSet rs = stmt.executeQuery()) {
+		// 		while (rs.next()) {
+		// 			course_nos.add(rs.getString("course_no"));
+		// 			course_ids.add(rs.getString("course_id"));
+		// 			credit_hours.add(rs.getDouble("credit_hours"));
+		// 		}
+		// 		System.out.print("\n::: ");
+		// 	} catch (SQLException e) {
+		// 		PowerSchool.shutdown(true);
+		// 	}
+		// } catch (SQLException e) {
+		// 	PowerSchool.shutdown(true);
+		// }
+
+		// System.out.println(course_grades);
+
+		
+	}
+
 }

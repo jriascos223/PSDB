@@ -88,7 +88,7 @@ public class QueryUtils {
         "INNER JOIN students ON students.student_id = course_grades.student_id WHERE course_no = ?";
 
     public static String GET_STUDENT_COURSES = 
-    "SELECT courses.title, grade, courses.course_id, courses.course_no FROM course_grades " +
+    "SELECT * FROM course_grades " +
         "INNER JOIN courses ON course_grades.course_id = courses.course_id " +
         "INNER JOIN students ON students.student_id = course_grades.student_id " +
         "WHERE students.student_id = ?";

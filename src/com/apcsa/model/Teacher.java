@@ -294,7 +294,9 @@ public class Teacher extends User {
         String assignmentTitle = "";
         int pointValue = -1;
 
+
         int course_id = this.getCourseIdFromTitle(title);
+
 
         if (mp == 5) {
             midtermExists = this.checkIfMidtermOrFinalExists("midterm", course_id);
@@ -354,6 +356,8 @@ public class Teacher extends User {
             } catch (SQLException e) {
                 PowerSchool.shutdown(true);
             }
+
+        
         }        
     }
 

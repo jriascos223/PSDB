@@ -162,8 +162,13 @@ public class Application {
 					PowerSchool.resetPassword(in);
 					return true;
 				case DATABASE:
-					PowerSchool.initialize(true);
-					System.out.println("Database reset.");
+					boolean intent = Utils.confirm(in, "Are you sure you want to reset all settings and data? (y/n) ");
+					if (intent) {
+						PowerSchool.initialize(true);
+						System.out.println("Database reset.");
+					}else {
+						System.out.println("Database not reset.");
+					}
 					return true;
 				case LOGOUT:
 					return false;
