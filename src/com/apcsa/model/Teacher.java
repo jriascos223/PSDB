@@ -192,13 +192,19 @@ public class Teacher extends User {
         int courseInput = 0;
         ArrayList<String> course_nos = getTeacherCourseList();
 
-        try {
-			courseInput = in.nextInt();
-		} catch (InputMismatchException e) {
-			System.out.println("\nYour input was invalid. Please try again.");
-		} finally {
-			in.nextLine();
+        while (courseInput > course_nos.size() || courseInput < 1) {
+            try {
+                courseInput = in.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Your input was invalid. Please try again.");
+            } finally {
+                in.nextLine();
+            }
+            if (courseInput > course_nos.size() || courseInput < 1) {
+                System.out.print("The input is invalid. Try again: ");
+            }
         }
+        
 
         int mp = getMarkingPeriodSelection(in);
 
@@ -282,6 +288,9 @@ public class Teacher extends User {
                 output = in.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Your input was invalid. Please try again.\n");
+            }
+            if (output > 6 || output < 1) {
+                System.out.print("\nThe input is invalid. Try again: \n");
             }
             in.nextLine();
         } while (output < 1 || output > 6);

@@ -169,13 +169,20 @@ public class Student extends User {
 			PowerSchool.shutdown(true);
 		}
 
-		try {
-			input = in.nextInt();
-		} catch (InputMismatchException e) {
-			System.out.println("\nYour input was invalid. Please try again.");
-		} finally {
-			in.nextLine();
+		while (input > course_nos.size() || input < 1) {
+			try {
+				input = in.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nYour input was invalid. Please try again.");
+			} finally {
+				in.nextLine();
+			}
+			if (input > course_nos.size() || input < 1) {
+				System.out.print("\nInput is invalid. Try again: ");
+			}
 		}
+
+		
 
 		System.out.println("\n[1] MP1 Assignment.");
 		System.out.println("[2] MP2 Assignment.");

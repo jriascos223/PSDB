@@ -313,7 +313,7 @@ public class Application {
 				System.out.println("\nYour input was invalid. Please try again.");
 			}
             in.nextLine();
-		} while (output > 6 || output < 1);
+		} while (output > 4 || output < 1);
 
 		switch(output) {
 			case 1:
