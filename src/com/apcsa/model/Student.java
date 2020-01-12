@@ -239,7 +239,6 @@ public class Student extends User {
 	}
 
 	public void updateMPGrade(int course_id, int mp) {
-		System.out.println("UPDATING MP GRADE HERE");
 		double pointsEarned = 0;
 		double pointsPossible = 0;
 		int grade = 0;
@@ -263,15 +262,27 @@ public class Student extends User {
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
 
-			try (Connection conn = PowerSchool.getConnection()) {
-				String updateStatement = "UPDATE course_grades SET " + columnLabel + " = ? WHERE course_id = ? AND student_id = ?";
-				PreparedStatement stmt = conn.prepareStatement(updateStatement);
-				stmt.setInt(1, grade);
-				stmt.setInt(2, course_id);
-				stmt.setInt(3, studentId);
-				stmt.executeUpdate();
-			}catch (SQLException e) {
-				System.out.println(e);
+			if (grade == 0) {
+				try (Connection conn = PowerSchool.getConnection()) {
+					String updateStatement = "UPDATE course_grades SET " + columnLabel + " = NULL WHERE course_id = ? AND student_id = ?";
+					PreparedStatement stmt = conn.prepareStatement(updateStatement);
+					stmt.setInt(1, course_id);
+					stmt.setInt(2, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
+			}else {
+				try (Connection conn = PowerSchool.getConnection()) {
+					String updateStatement = "UPDATE course_grades SET " + columnLabel + " = ? WHERE course_id = ? AND student_id = ?";
+					PreparedStatement stmt = conn.prepareStatement(updateStatement);
+					stmt.setInt(1, grade);
+					stmt.setInt(2, course_id);
+					stmt.setInt(3, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
 			}
 		}else if (mp == 5) {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_midterm = 1";
@@ -290,15 +301,28 @@ public class Student extends User {
 			}
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
-			try (Connection conn = PowerSchool.getConnection()) {
-				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET midterm_exam = ? WHERE course_id = ? AND student_id = ?");
-				stmt.setInt(1, grade);
-				stmt.setInt(2, course_id);
-				stmt.setInt(3, studentId);
-				stmt.executeUpdate();
-			}catch (SQLException e) {
-				System.out.println(e);
+
+			if (grade == 0) {
+				try (Connection conn = PowerSchool.getConnection()) {
+					PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET midterm_exam = NULL WHERE course_id = ? AND student_id = ?");
+					stmt.setInt(1, course_id);
+					stmt.setInt(2, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
+			}else {
+				try (Connection conn = PowerSchool.getConnection()) {
+					PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET midterm_exam = ? WHERE course_id = ? AND student_id = ?");
+					stmt.setInt(1, grade);
+					stmt.setInt(2, course_id);
+					stmt.setInt(3, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
 			}
+			
 		}else if (mp == 6) {
 			String statement = "SELECT * FROM assignment_grades INNER JOIN assignments ON assignments.assignment_id = assignment_grades.assignment_id WHERE student_id = ? AND assignments.course_id = ? AND is_final = 1";
 			try (Connection conn = PowerSchool.getConnection()) {
@@ -316,15 +340,28 @@ public class Student extends User {
 			}
 
 			grade = (int) Math.round((pointsEarned / pointsPossible) * 100);
-			try (Connection conn = PowerSchool.getConnection()) {
-				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET final_exam = ? WHERE course_id = ? AND student_id = ?");
-				stmt.setInt(1, grade);
-				stmt.setInt(2, course_id);
-				stmt.setInt(3, studentId);
-				stmt.executeUpdate();
-			}catch (SQLException e) {
-				System.out.println(e);
+
+			if (grade == 0) {
+				try (Connection conn = PowerSchool.getConnection()) {
+					PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET final_exam = NULL WHERE course_id = ? AND student_id = ?");
+					stmt.setInt(1, course_id);
+					stmt.setInt(2, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
+			}else {
+				try (Connection conn = PowerSchool.getConnection()) {
+					PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET final_exam = ? WHERE course_id = ? AND student_id = ?");
+					stmt.setInt(1, grade);
+					stmt.setInt(2, course_id);
+					stmt.setInt(3, studentId);
+					stmt.executeUpdate();
+				}catch (SQLException e) {
+					System.out.println(e);
+				}
 			}
+			
 		}
 
 		//after the mp / midterm / final grade has been updated, the course itself has to be updated
@@ -360,17 +397,31 @@ public class Student extends User {
 			gradesArray[i] = grades.get(i);
 		}
 
-		int course_grade = (int) Math.round(Utils.getGrade(gradesArray));
 
-		try (Connection conn = PowerSchool.getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET grade = ? WHERE course_id = ? AND student_id = ?");
-			stmt.setInt(1, course_grade);
-			stmt.setInt(2, course_id);
-			stmt.setInt(3, studentId);
-			stmt.executeUpdate();
-		}catch (SQLException e) {
-			System.out.println(e);
+		if (gradesArray.length == 0) {
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET grade = NULL WHERE course_id = ? AND student_id = ?");
+				stmt.setInt(1, course_id);
+				stmt.setInt(2, studentId);
+				stmt.executeUpdate();
+			}catch (SQLException e) {
+				System.out.println(e);
+			}
+		}else {
+			int course_grade = (int) Math.round(Utils.getGrade(gradesArray));
+
+			try (Connection conn = PowerSchool.getConnection()) {
+				PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET grade = ? WHERE course_id = ? AND student_id = ?");
+				stmt.setInt(1, course_grade);
+				stmt.setInt(2, course_id);
+				stmt.setInt(3, studentId);
+				stmt.executeUpdate();
+			}catch (SQLException e) {
+				System.out.println(e);
+			}
 		}
+
+		
 
 		//after the course has been updated, the GPA for the student has to be updated
 		Utils.updateGPA(this);

@@ -280,7 +280,7 @@ public class PowerSchool {
     public static ArrayList<Student> getStudentsWithAssignment(int assignmentId) {
         ArrayList<Student> studentsWithAssignment = new ArrayList<Student>();
         try (Connection conn  = PowerSchool.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM students INNER JOIN assignment_grades ON assignment_grades.student_id = students.student_id WHERE assignment_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users INNER JOIN students INNER JOIN assignment_grades ON assignment_grades.student_id = students.student_id WHERE assignment_id = ?");
             stmt.setInt(1, assignmentId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -290,7 +290,7 @@ public class PowerSchool {
             
             
         } catch (SQLException e) {
-            PowerSchool.shutdown(true);
+            System.out.print(e);
         }
         return studentsWithAssignment;
     }

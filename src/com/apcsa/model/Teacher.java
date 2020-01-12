@@ -397,6 +397,7 @@ public class Teacher extends User {
 
         if (assignments.size() != 0) {
             int assignmentSelection = this.getAssignmentSelection(in, assignments); 
+            studentsWithAssignment = PowerSchool.getStudentsWithAssignment(assignments.get(assignmentSelection - 1).getAssignmentId());
             
 
             try (Connection conn = PowerSchool.getConnection()) {
@@ -419,7 +420,7 @@ public class Teacher extends User {
 
             System.out.printf("\nSuccessfully deleted %s.\n", assignments.get(assignmentSelection - 1).getTitle());
 
-            studentsWithAssignment = PowerSchool.getStudentsWithAssignment(assignments.get(assignmentSelection - 1).getAssignmentId());
+            
         } else {
             System.out.println("\nNo assignments to show.");
         }
