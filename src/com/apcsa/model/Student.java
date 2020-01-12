@@ -330,7 +330,7 @@ public class Student extends User {
 	}
 
 	private void updateGradeInCourse(int course_id){
-		Double[] grades = new Double[6];
+		ArrayList<Double> grades = new ArrayList<Double>();
 
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM course_grades WHERE student_id = ? AND course_id = ?");
@@ -338,25 +338,28 @@ public class Student extends User {
 			stmt.setInt(2, course_id);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
-					grades[0] = (double) rs.getInt("mp1");
-					grades[1] = (double) rs.getInt("mp2");
-					grades[2] = (double) rs.getInt("mp3");
-					grades[3] = (double) rs.getInt("mp4");
-					grades[4] = (double) rs.getInt("midterm_exam");
-					grades[5] = (double) rs.getInt("final_exam");
+					grades.add(rs.getDouble("mp1"));
+					grades.add(rs.getDouble("mp2"));
+					grades.add(rs.getDouble("mp3"));
+					grades.add(rs.getDouble("mp4"));
+					grades.add(rs.getDouble("midterm_exam"));
+					grades.add(rs.getDouble("final_exam"));
 				}
 			}
 		}catch (SQLException e) {
 			System.out.println(e);
 		}
 
-		for(int i = 0; i < 7; i++) {
-			if (grades[i] == 0) {
-				return;
-			}
-		}
+		while (grades.remove(0.0));
 
-		int course_grade = (int) Math.round(Utils.getGrade(grades));
+		Double[] gradesArray = new Double[grades.size()];
+
+		for (int i = 0; i < grades.size(); i++) {
+			gradesArray[i] = grades.get(i);
+		}
+		
+
+		int course_grade = (int) Math.round(Utils.getGrade(gradesArray));
 
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement("UPDATE course_grades SET grade = ? WHERE course_id = ? AND student_id = ?");

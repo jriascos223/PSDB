@@ -199,7 +199,7 @@ public class Application {
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println("\nYour input was invalid. Please try again.\n");
+				System.out.println("\nYour input was invalid. Please try again.");
 			}
 			in.nextLine(); // clears the buffer
 		} while (output < 1 || output > 7);
@@ -240,7 +240,7 @@ public class Application {
 			try {
 				output = in.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println("\nYour input was invalid. Please try again.\n");
+				System.out.println("\nYour input was invalid. Please try again.");
 			}
 			in.nextLine();
     	} while (output < 1 || output > 4);
@@ -276,7 +276,7 @@ public class Application {
 			try {
                 output = in.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println("\nYour input was invalid. Please try again.\n");
+				System.out.println("\nYour input was invalid. Please try again.");
 			}
             in.nextLine();
 		} while (output > 6 || output < 1);
@@ -311,7 +311,7 @@ public class Application {
 			try {
                 output = in.nextInt();
 			} catch (InputMismatchException e) {
-				System.out.println("\nYour input was invalid. Please try again.\n");
+				System.out.println("\nYour input was invalid. Please try again.");
 			}
             in.nextLine();
 		} while (output > 6 || output < 1);

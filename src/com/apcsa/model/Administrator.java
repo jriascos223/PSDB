@@ -51,6 +51,7 @@ public class Administrator extends User {
 	}
 
 	public void viewFaculty() {
+		System.out.print("\n");
 		ArrayList<Teacher> faculty = new ArrayList<Teacher>();
 		faculty = PowerSchool.getFaculty();
 		for (int i = 0; i < faculty.size(); i++) {
@@ -63,12 +64,14 @@ public class Administrator extends User {
 		System.out.println("\nChoose a department:\n");
 		int departmentCount = 0;
 		int selection = 0;
+		ArrayList<String> departments = new ArrayList<String>();
 		
 		try (Connection conn = PowerSchool.getConnection()) {
 			PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_DEPARTMENTS);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					System.out.println(rs.getString("Phrase"));
+					departments.add((rs.getString("Phrase")).replaceAll("\\[\\d\\]\\s", ""));
 					departmentCount++;
 				}
 			} catch (SQLException e){
@@ -78,6 +81,8 @@ public class Administrator extends User {
 		} catch (SQLException e) {
 			PowerSchool.shutdown(true);
 		}
+
+		System.out.print("\n::: ");
 		
 		do {
 			try {
@@ -89,16 +94,18 @@ public class Administrator extends User {
 			}
 		} while (selection < 0 || selection > departmentCount);
 
+		System.out.print("\n");
 		ArrayList<Teacher> faculty = new ArrayList<Teacher>();
 		faculty = PowerSchool.getFaculty();
 		for (int i = 0; i < faculty.size(); i++) {
 			if (faculty.get(i).getDepartmentId() ==  selection) {
-				System.out.println(faculty.get(i).getLastName() + ", " +  faculty.get(i).getFirstName() + " / " + faculty.get(i).getDepartmentId());
+				System.out.println(faculty.get(i).getLastName() + ", " +  faculty.get(i).getFirstName() + " / " + departments.get(i));
 			}
 		}
 	}
 
 	public void viewStudentEnrollment(){
+		System.out.print("\n");
 		ArrayList<Student> students = new ArrayList<Student>();
 		students = PowerSchool.getStudents();
 		for (int i = 0; i < students.size(); i++) {
@@ -112,7 +119,7 @@ public class Administrator extends User {
 		System.out.println("[2] Sophomore.");
 		System.out.println("[3] Junior.");
 		System.out.println("[4] Senior.");
-		System.out.print("\n:::");
+		System.out.print("\n::: ");
 		int selection = 0;
 
 		do {
@@ -131,12 +138,18 @@ public class Administrator extends User {
 
 		ArrayList<Student> students = new ArrayList<Student>();
 		students = PowerSchool.getStudents();
+		int count = 0;
 
 
 		for (int i = 0; i < students.size(); i++) {
 			if (students.get(i).getGradeLevel() == selection) {
 				System.out.println(students.get(i).getLastName() + ", " + students.get(i).getFirstName() + " / " + students.get(i).getClassRank());
+				count++;
 			}
+		}
+
+		if (count == 0) {
+			System.out.println("No students from that year.");
 		}
 
 		
@@ -150,6 +163,12 @@ public class Administrator extends User {
 			selection = in.nextLine();
 		} catch (InputMismatchException e) {
 			PowerSchool.shutdown(true);
+		}
+
+		ArrayList<String> course_nos = PowerSchool.getCourseNos();
+
+		if (!course_nos.contains(selection)) {
+			System.out.println("\nInvalid course number.");
 		}
 
 
@@ -168,12 +187,12 @@ public class Administrator extends User {
 	}
 
 	public void changePassword(Scanner in) {
-		System.out.println("\nEnter current password:");
+		System.out.print("\nEnter current password:");
 		String currentPassword = in.nextLine();
 		currentPassword = Utils.getHash(currentPassword);
 
     	if (currentPassword.equals(this.getPassword())) {
-    		System.out.println("\nEnter a new password:");
+    		System.out.print("\nEnter a new password:");
     		String password = Utils.getHash((in.nextLine()));
     		this.setPassword(password);
         	try {
@@ -184,7 +203,9 @@ public class Administrator extends User {
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");
-    	}
+		}
+		
+		System.out.println("Password changed.");
 		
 	}
 

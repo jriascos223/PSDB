@@ -202,6 +202,45 @@ public class PowerSchool {
          return students;
     }
 
+    public static ArrayList<String> getCourseNos() {
+        ArrayList<String> courses = new ArrayList<String>();
+        try (Connection conn = getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_COURSE_NUMBERS);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    courses.add(rs.getString("Number"));
+                }
+            }
+         } catch (SQLException e) {
+             shutdown(true);
+         }
+
+         return courses;
+    }
+
+    /**
+     * Returns an ArrayList of the students in a course.
+     * @param course_id the course_id of the course in question
+     * @return an ArrayList of students
+     */
+    public static ArrayList<Student> getStudentsInCourse(int course_id) {
+        ArrayList<Student> studentsInCourse = new ArrayList<Student>();
+        try (Connection conn  = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_ID);
+            stmt.setInt(1, course_id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    studentsInCourse.add(new Student(rs));
+                }
+            }
+            
+            
+        } catch (SQLException e) {
+            PowerSchool.shutdown(true);
+        }
+        return studentsInCourse;
+    }
+
 
 
     /*
@@ -367,7 +406,6 @@ public class PowerSchool {
     }
     
     public static void updateGPA(double gpa, int studentId) {
-        System.out.println("SHOULD UPDATE GPA");
         try (Connection conn = getConnection();) {
         	PreparedStatement stmt = conn.prepareStatement("UPDATE students SET gpa = ? WHERE student_id = ?"); 
 

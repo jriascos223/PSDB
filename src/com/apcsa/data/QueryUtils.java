@@ -103,6 +103,12 @@ public class QueryUtils {
         "SELECT * FROM teachers INNER JOIN courses ON teachers.teacher_id = courses.teacher_id WHERE teachers.teacher_id = ?";
     
     public static String GET_STUDENT_ENROLLMENT_BY_COURSE_ID = 
-    "SELECT * FROM students LEFT OUTER JOIN course_grades ON students.student_ID = course_grades.student_id INNER JOIN courses ON courses.course_id = course_grades.course_id OUTER LEFT JOIN users ON users.user_id = students.student_id WHERE courses.course_id = ?";
+    "SELECT * FROM students " +
+        "LEFT OUTER JOIN course_grades ON students.student_ID = course_grades.student_id " + 
+        "INNER JOIN courses ON courses.course_id = course_grades.course_id " + 
+        "OUTER LEFT JOIN users ON users.user_id = students.student_id WHERE courses.course_id = ?";
+
+    public static String GET_COURSE_NUMBERS = 
+        "SELECT course_no \"Number\" FROM courses";
 
 }

@@ -436,7 +436,7 @@ public class Teacher extends User {
             int assignmentSelection = this.getAssignmentSelection(in, assignments);
 
             //gets the students in the course
-            ArrayList<Student> studentsInCourse = this.getStudentsInCourse(course_id);
+            ArrayList<Student> studentsInCourse = PowerSchool.getStudentsInCourse(course_id);
 
             if (studentsInCourse.size() == 0) {
                 System.out.println("\nThere are no students to grade, try selecting another course.");
@@ -610,28 +610,7 @@ public class Teacher extends User {
         return assignmentSelection;
     }
 
-    /**
-     * Returns an ArrayList of the students in a course.
-     * @param course_id the course_id of the course in question
-     * @return an ArrayList of students
-     */
-    private ArrayList<Student> getStudentsInCourse(int course_id) {
-        ArrayList<Student> studentsInCourse = new ArrayList<Student>();
-        try (Connection conn  = PowerSchool.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENT_ENROLLMENT_BY_COURSE_ID);
-            stmt.setInt(1, course_id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    studentsInCourse.add(new Student(rs));
-                }
-            }
-            
-            
-        } catch (SQLException e) {
-            PowerSchool.shutdown(true);
-        }
-        return studentsInCourse;
-    }
+    
 
     /**
      * Prompts the user for a student and returns the selected student in a course.
