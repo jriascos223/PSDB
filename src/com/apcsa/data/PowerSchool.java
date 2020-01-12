@@ -202,6 +202,23 @@ public class PowerSchool {
          return students;
     }
 
+    public static ArrayList<Student> getStudentsByGrade(int grade) {
+        ArrayList<Student> students = new ArrayList<Student>();
+        try (Connection conn = getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(QueryUtils.GET_STUDENTS_BY_GRADE);
+            stmt.setInt(1, grade);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(new Student(rs));
+                }
+            }
+         } catch (SQLException e) {
+             shutdown(true);
+         }
+
+         return students;
+    }
+
     public static ArrayList<String> getCourseNos() {
         ArrayList<String> courses = new ArrayList<String>();
         try (Connection conn = getConnection()) {
@@ -216,6 +233,20 @@ public class PowerSchool {
          }
 
          return courses;
+    }
+
+    public static void updateClassRanks(ArrayList<Student> students) {
+        for (int i = 0; i < students.size(); i++) {
+            try (Connection conn = PowerSchool.getConnection()) {
+                PreparedStatement stmt = conn.prepareStatement("UPDATE students SET class_rank = ? WHERE student_id = ?");
+                stmt.setInt(1, students.get(i).getClassRank());
+                stmt.setInt(2, students.get(i).getStudentId());
+                stmt.executeUpdate();
+            } catch (SQLException e){
+                PowerSchool.shutdown(true);
+            }
+        }
+        
     }
 
     /**
@@ -239,6 +270,29 @@ public class PowerSchool {
             PowerSchool.shutdown(true);
         }
         return studentsInCourse;
+    }
+
+    /**
+     * Returns an ArrayList of the students in a course.
+     * @param course_id the course_id of the course in question
+     * @return an ArrayList of students
+     */
+    public static ArrayList<Student> getStudentsWithAssignment(int assignmentId) {
+        ArrayList<Student> studentsWithAssignment = new ArrayList<Student>();
+        try (Connection conn  = PowerSchool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM students INNER JOIN assignment_grades ON assignment_grades.student_id = students.student_id WHERE assignment_id = ?");
+            stmt.setInt(1, assignmentId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    studentsWithAssignment.add(new Student(rs));
+                }
+            }
+            
+            
+        } catch (SQLException e) {
+            PowerSchool.shutdown(true);
+        }
+        return studentsWithAssignment;
     }
 
 
@@ -398,11 +452,10 @@ public class PowerSchool {
 	public static void shutdown(boolean error) {
         if (error) {
             System.out.println("\nA fatal error has occurred. Shutting down...");
-            Application.running = false;
-            return;
+            System.exit(0);
         }
         System.out.println("\nShutting down...");
-        Application.running = false;
+        System.exit(0);
     }
     
     public static void updateGPA(double gpa, int studentId) {

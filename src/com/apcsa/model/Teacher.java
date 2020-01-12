@@ -211,12 +211,12 @@ public class Teacher extends User {
       */
 
 	public void changePassword(Scanner in) {
-		System.out.println("\nEnter current password:");
+		System.out.print("\nEnter current password: ");
         String currentPassword = in.nextLine();
         currentPassword = Utils.getHash(currentPassword);
     	
     	if (currentPassword.equals(this.password)) {
-    		System.out.println("\nEnter a new password:");
+    		System.out.print("\nEnter a new password: ");
     		String password = Utils.getHash((in.nextLine()));
     		this.setPassword(password);
         	try {
@@ -227,7 +227,8 @@ public class Teacher extends User {
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");
-    	}
+        }
+        System.out.println("\nPassword changed.");
 		
     }
     
@@ -380,6 +381,7 @@ public class Teacher extends User {
      * @param title
      */
     private void deleteAssignmentHelper(Scanner in, int mp, String title) {
+        ArrayList<Student> studentsWithAssignment = new ArrayList<Student>();
         
 
         //get course id from title
@@ -416,9 +418,19 @@ public class Teacher extends User {
             }
 
             System.out.printf("\nSuccessfully deleted %s.\n", assignments.get(assignmentSelection - 1).getTitle());
+
+            studentsWithAssignment = PowerSchool.getStudentsWithAssignment(assignments.get(assignmentSelection - 1).getAssignmentId());
         } else {
             System.out.println("\nNo assignments to show.");
         }
+
+
+
+        for (int i = 0; i < studentsWithAssignment.size(); i++) {
+            studentsWithAssignment.get(i).updateMPGrade(course_id, mp);
+        }
+
+        
 
     }
 

@@ -187,12 +187,12 @@ public class Administrator extends User {
 	}
 
 	public void changePassword(Scanner in) {
-		System.out.print("\nEnter current password:");
+		System.out.print("\nEnter current password: ");
 		String currentPassword = in.nextLine();
 		currentPassword = Utils.getHash(currentPassword);
 
     	if (currentPassword.equals(this.getPassword())) {
-    		System.out.print("\nEnter a new password:");
+    		System.out.print("\nEnter a new password: ");
     		String password = Utils.getHash((in.nextLine()));
     		this.setPassword(password);
         	try {
@@ -205,7 +205,7 @@ public class Administrator extends User {
     		System.out.println("\nIncorrect current password.");
 		}
 		
-		System.out.println("Password changed.");
+		System.out.println("\nPassword changed.");
 		
 	}
 

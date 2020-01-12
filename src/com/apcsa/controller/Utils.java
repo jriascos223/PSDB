@@ -205,8 +205,7 @@ public class Utils {
                 }
             }
             
-        });
-        
+        });        
         // applies a class rank (provided the student has a measurable gpa)
         
         int rank = 1;
@@ -288,7 +287,9 @@ public class Utils {
             PowerSchool.updateGPA(roundedGpa, student.getStudentId());
             
 
-            updateRanks(PowerSchool.getStudents());
+            ArrayList<Student> newRanks = updateRanks(PowerSchool.getStudentsByGrade(student.getGradeLevel()));
+
+            PowerSchool.updateClassRanks(newRanks);
 	}
 
 }

@@ -14,7 +14,6 @@ public class Application {
 	enum AdminAction { FACULTY, FACULTYBYDEPT, STUDENT, STUDENTBYGRADE, STUDENTBYCOURSE, PASSWORD, LOGOUT }
 	enum TeacherAction { ENROLLMENT, AASSIGNMENT, DASSIGNMENT, ENTERGRADE, PASSWORD, LOGOUT}
 
-	public static boolean running = true;
 
     /**
      * Creates an instance of the Application class, which is responsible for interacting
@@ -41,7 +40,7 @@ public class Application {
 
         // continuously prompt for login credentials and attempt to login
 
-        while (running) {
+        while (true) {
             System.out.print("\nUsername: ");
             String username = in.next();
 

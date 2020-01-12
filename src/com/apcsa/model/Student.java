@@ -88,12 +88,12 @@ public class Student extends User {
      */
 
 	public void changePassword(Scanner in) {
-		System.out.println("\nEnter current password:");
+		System.out.print("\nEnter current password: ");
         String currentPassword = in.nextLine();
         currentPassword = Utils.getHash(currentPassword);
     	
     	if (currentPassword.equals(this.password)) {
-    		System.out.println("\nEnter a new password:");
+    		System.out.print("\nEnter a new password: ");
     		String password = Utils.getHash((in.nextLine()));
     		this.setPassword(password);
         	try {
@@ -104,7 +104,8 @@ public class Student extends User {
         	}
     	}else {
     		System.out.println("\nIncorrect current password.");
-    	}
+		}
+		System.out.println("\nPassword changed.");
 		
 	}
 
@@ -238,6 +239,7 @@ public class Student extends User {
 	}
 
 	public void updateMPGrade(int course_id, int mp) {
+		System.out.println("UPDATING MP GRADE HERE");
 		double pointsEarned = 0;
 		double pointsPossible = 0;
 		int grade = 0;
@@ -357,7 +359,6 @@ public class Student extends User {
 		for (int i = 0; i < grades.size(); i++) {
 			gradesArray[i] = grades.get(i);
 		}
-		
 
 		int course_grade = (int) Math.round(Utils.getGrade(gradesArray));
 
